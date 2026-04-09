@@ -1,0 +1,45 @@
+name: deploy
+
+on:
+   workflow_call:
+      inputs:
+         environment:
+            required: true
+            type: string
+         ref_name:
+            required: true
+            type: string
+         action:
+            required: true
+            type: string
+      secrets:
+         DEPLOY_PRIVATE_KEY:
+            required: true
+
+jobs:
+   deploy:
+      runs-on: ubuntu-latest
+      concurrency: ${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
+
+      steps:
+         - uses: actions/checkout@v6
+           with:
+              ref: ${{ inputs.ref_name }}
+              sparse-checkout: |
+                 deploy.php
+
+         - name: Setup PHP
+           uses: shivammathur/setup-php@v2
+           with:
+              php-version: "8.4"
+              tools: deployer:7.5.12
+              coverage: none
+
+         - name: Run deploy command
+           id: deploy
+           uses: deployphp/action@v1
+           with:
+              private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+              dep: ${{ inputs.action }} type=${{ inputs.environment }} -o branch=${{ inputs.ref_name }}
+              deployer-binary: "/usr/local/bin/deployer"

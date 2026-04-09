@@ -1,0 +1,23 @@
+name: prod-deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Deploy action'
+        required: true
+        default: 'deploy'
+        type: choice
+        options:
+          - deploy
+          - rollback
+
+jobs:
+  call-deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      ref_name: main
+      action: ${{ github.event.inputs.action }}
+    secrets:
+      DEPLOY_PRIVATE_KEY: ${{ secrets.PROD_PRIVATE_KEY }}
