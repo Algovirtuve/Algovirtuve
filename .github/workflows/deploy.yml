@@ -38,7 +38,7 @@ jobs:
 
          - name: Run deploy command
            id: deploy
-           uses: deployphp/action@v1
+           uses: deployphp/action@v1.0.21
            with:
               private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
               dep: ${{ inputs.action }} type=${{ inputs.environment }} -o branch=${{ inputs.ref_name }}
