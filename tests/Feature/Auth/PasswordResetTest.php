@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 test('reset password link screen can be rendered', function () {
@@ -47,13 +48,42 @@ test('password can be reset with valid token', function () {
         $response = $this->post(route('password.update'), [
             'token' => $notification->token,
             'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'new-password-123',
+            'password_confirmation' => 'new-password-123',
         ]);
 
         $response
             ->assertSessionHasNoErrors()
             ->assertRedirect(route('login'));
+
+        return true;
+    });
+});
+
+test('password cannot be reset to the existing password', function () {
+    Notification::fake();
+
+    $user = User::factory()->create([
+        'password' => 'password',
+    ]);
+
+    $this->post(route('password.email'), ['email' => $user->email]);
+
+    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+        $response = $this->from(route('password.reset', $notification->token))->post(route('password.update'), [
+            'token' => $notification->token,
+            'email' => $user->email,
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $response
+            ->assertRedirect(route('password.reset', $notification->token))
+            ->assertSessionHasErrors([
+                'password' => 'The new password must be different from your current password.',
+            ]);
+
+        expect(Hash::check('password', $user->fresh()->password))->toBeTrue();
 
         return true;
     });

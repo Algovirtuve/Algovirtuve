@@ -3,18 +3,18 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('guest')->controller(AuthController::class)->group(function () {
-    Route::get('login', 'createSession')->name('login');
-    Route::post('login', 'storeSession')->name('login.store');
+Route::middleware('guest')->group(function () {
+    Route::get('login', [AuthController::class, 'createSession'])->name('login');
+    Route::post('login', [AuthController::class, 'storeSession'])->name('login.store');
 
-    Route::get('register', 'createUser')->name('register');
-    Route::post('register', 'storeUser')->name('register.store');
+    Route::get('register', [AuthController::class, 'createUser'])->name('register');
+    Route::post('register', [AuthController::class, 'storeUser'])->name('register.store');
 
-    Route::get('forgot-password', 'createPasswordResetLink')->name('password.request');
-    Route::post('forgot-password', 'storePasswordResetLink')->name('password.email');
+    Route::get('forgot-password', [AuthController::class, 'createPasswordResetLink'])->name('password.request');
+    Route::post('forgot-password', [AuthController::class, 'storePasswordResetLink'])->name('password.email');
 
-    Route::get('reset-password/{token}', 'createNewPassword')->name('password.reset');
-    Route::post('reset-password', 'storeNewPassword')->name('password.update');
+    Route::get('reset-password/{token}', [AuthController::class, 'createNewPassword'])->name('password.reset');
+    Route::post('reset-password', [AuthController::class, 'storeNewPassword'])->name('password.update');
 });
 
 Route::middleware(['auth'])->group(function () {

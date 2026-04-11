@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -73,7 +74,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect(route('home', absolute: false));
+        return redirect(route('login', absolute: false));
     }
 
     public function createUser(): Response
@@ -143,6 +144,12 @@ class AuthController extends Controller
         ]);
 
         $status = Password::reset($validated, function (User $user, string $password): void {
+            if (Hash::check($password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'password' => __('The new password must be different from your current password.'),
+                ]);
+            }
+
             $user->forceFill([
                 'password' => $password,
                 'remember_token' => Str::random(60),
