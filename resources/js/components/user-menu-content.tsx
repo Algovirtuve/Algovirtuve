@@ -19,7 +19,7 @@ type Props = {
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
 
-    const handleLogout = () => {
+    const onLogout = () => {
         cleanup();
         router.flushAll();
     };
@@ -51,7 +51,7 @@ export function UserMenuContent({ user }: Props) {
                     className="block w-full cursor-pointer"
                     href={logout()}
                     as="button"
-                    onClick={handleLogout}
+                    onClick={onLogout}
                     data-test="logout-button"
                 >
                     <LogOut className="mr-2" />
