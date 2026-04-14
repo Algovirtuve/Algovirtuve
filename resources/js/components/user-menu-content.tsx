@@ -24,6 +24,10 @@ export function UserMenuContent({ user }: Props) {
         router.flushAll();
     };
 
+    const onSettings = () => {
+        cleanup();
+    }
+
     return (
         <>
             <DropdownMenuLabel className="p-0 font-normal">
@@ -38,7 +42,7 @@ export function UserMenuContent({ user }: Props) {
                         className="block w-full cursor-pointer"
                         href={edit()}
                         prefetch
-                        onClick={cleanup}
+                        onClick={onSettings}
                     >
                         <Settings className="mr-2" />
                         Settings
