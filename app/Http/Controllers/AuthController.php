@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Concerns\PasswordValidationRules;
 use App\Http\Requests\StoreNewPasswordRequest;
 use App\Http\Requests\StorePasswordResetLinkRequest;
 use App\Http\Requests\StoreSessionRequest;
