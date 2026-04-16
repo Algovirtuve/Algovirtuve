@@ -14,7 +14,7 @@ class RecipeSeeder extends Seeder
     public function run(): void
     {
         Recipe::factory()
-            ->count(100)
+            ->count(10)
             ->create([
                 'status' => RecipeStatus::Accepted,
             ]);
