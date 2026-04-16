@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { Heart, LayoutGrid } from 'lucide-react';
+import { BookOpen, Heart, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -15,6 +15,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as preferences } from '@/routes/preferences';
 import type { NavItem } from '@/types';
+import { index as onRecipeClick } from '@/routes/recipes';
 
 const mainNavItems: NavItem[] = [
     {
@@ -26,6 +27,11 @@ const mainNavItems: NavItem[] = [
         title: 'Preferences',
         href: preferences(),
         icon: Heart,
+    },
+    {
+        title: 'Recipes',
+        href: onRecipeClick(),
+        icon: BookOpen,
     },
 ];
 

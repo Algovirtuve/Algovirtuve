@@ -23,7 +23,8 @@ class PreferenceFactory extends Factory
         return [
             'user_id' => User::factory(),
             'recipe_id' => Recipe::factory(),
-            'status' => fake()->randomElement(PreferenceStatus::cases()),
+            'preference_status' => fake()->randomElement(PreferenceStatus::cases()),
+            'generation_date' => fake()->date(),
         ];
     }
 }

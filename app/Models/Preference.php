@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'recipe_id', 'status'])]
+#[Fillable(['user_id', 'recipe_id', 'preference_status', 'generation_date'])]
 class Preference extends Model
 {
     /** @use HasFactory<PreferenceFactory> */
     use HasFactory;
+
+    public $timestamps = false;
 
     /**
      * @return array<string, string>
@@ -21,7 +23,8 @@ class Preference extends Model
     protected function casts(): array
     {
         return [
-            'status' => PreferenceStatus::class,
+            'preference_status' => PreferenceStatus::class,
+            'generation_date' => 'date',
         ];
     }
 

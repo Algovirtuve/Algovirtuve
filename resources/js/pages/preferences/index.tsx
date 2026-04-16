@@ -14,18 +14,24 @@ import { create, destroy, index } from '@/routes/preferences';
 
 type PreferenceItem = {
     id: number;
-    status: 'liked' | 'disliked';
+    preference_status: 'liked' | 'disliked' | 'awaiting';
     status_label: string;
-    created_at: string | null;
+    generation_date: string | null;
     recipe: {
         id: number;
         title: string;
         instructions: string;
-        preparation_time_minutes: number;
+        preparation_time: string;
         servings: number;
         difficulty: string;
-        calorie_count: number;
+        difficulty_label: string;
+        calorie_intake: number;
         status: string;
+        status_label: string;
+        diet_type: string;
+        diet_type_label: string;
+        meal: string;
+        meal_label: string;
     };
 };
 
@@ -88,7 +94,8 @@ export default function PreferencesIndex({
 
                                         <Badge
                                             variant={
-                                                preference.status === 'liked'
+                                                preference.preference_status ===
+                                                'liked'
                                                     ? 'default'
                                                     : 'secondary'
                                             }
@@ -101,31 +108,40 @@ export default function PreferencesIndex({
                                 <CardContent className="space-y-4">
                                     <div className="flex flex-wrap gap-2 text-xs">
                                         <Badge variant="outline">
-                                            {preference.recipe.difficulty}
+                                            {preference.recipe.difficulty_label}
                                         </Badge>
                                         <Badge variant="outline">
-                                            {
-                                                preference.recipe
-                                                    .preparation_time_minutes
-                                            }{' '}
-                                            min
+                                            {preference.recipe.preparation_time}
                                         </Badge>
                                         <Badge variant="outline">
                                             {preference.recipe.servings}{' '}
                                             servings
                                         </Badge>
                                         <Badge variant="outline">
-                                            {preference.recipe.calorie_count}{' '}
+                                            {preference.recipe.calorie_intake}{' '}
                                             kcal
+                                        </Badge>
+                                        <Badge variant="outline">
+                                            {preference.recipe.diet_type_label}
+                                        </Badge>
+                                        <Badge variant="outline">
+                                            {preference.recipe.meal_label}
                                         </Badge>
                                     </div>
                                 </CardContent>
 
                                 <CardFooter className="justify-between gap-3 border-t pt-6">
-                                    <p className="text-sm text-muted-foreground">
-                                        Recipe status:{' '}
-                                        {preference.recipe.status}
-                                    </p>
+                                    <div className="space-y-1 text-sm text-muted-foreground">
+                                        <p>
+                                            Recipe status:{' '}
+                                            {preference.recipe.status_label}
+                                        </p>
+                                        <p>
+                                            Generated:{' '}
+                                            {preference.generation_date ??
+                                                'N/A'}
+                                        </p>
+                                    </div>
 
                                     <Button variant="outline" asChild>
                                         <Link

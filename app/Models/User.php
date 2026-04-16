@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PreferenceStatus;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'first_name', 'last_name', 'nickname', 'email', 'password'])]
+#[Fillable(['name', 'surname', 'username', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -39,12 +40,28 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<Recipe, $this>
+     */
+    public function createdRecipes(): HasMany
+    {
+        return $this->hasMany(Recipe::class);
+    }
+
+    /**
      * @return BelongsToMany<Recipe, $this, Preference>
      */
     public function preferredRecipes(): BelongsToMany
     {
         return $this->belongsToMany(Recipe::class, 'preferences')
-            ->withPivot(['id', 'status'])
-            ->withTimestamps();
+            ->withPivot(['id', 'preference_status', 'generation_date']);
+    }
+
+    /**
+     * @return BelongsToMany<Recipe, $this, Preference>
+     */
+    public function favoriteRecipes(): BelongsToMany
+    {
+        return $this->preferredRecipes()
+            ->wherePivot('preference_status', PreferenceStatus::Liked->value);
     }
 }

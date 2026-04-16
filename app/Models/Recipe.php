@@ -2,23 +2,29 @@
 
 namespace App\Models;
 
+use App\Enums\DietType;
+use App\Enums\Meal;
 use App\Enums\RecipeDifficulty;
 use App\Enums\RecipeStatus;
 use Database\Factories\RecipeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
+    'user_id',
     'title',
     'instructions',
-    'preparation_time_minutes',
+    'preparation_time',
     'servings',
     'difficulty',
-    'calorie_count',
+    'calorie_intake',
     'status',
+    'diet_type',
+    'meal',
 ])]
 class Recipe extends Model
 {
@@ -31,9 +37,19 @@ class Recipe extends Model
     protected function casts(): array
     {
         return [
+            'diet_type' => DietType::class,
+            'meal' => Meal::class,
             'difficulty' => RecipeDifficulty::class,
             'status' => RecipeStatus::class,
         ];
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -50,7 +66,6 @@ class Recipe extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'preferences')
-            ->withPivot(['id', 'status'])
-            ->withTimestamps();
+            ->withPivot(['id', 'preference_status', 'generation_date']);
     }
 }

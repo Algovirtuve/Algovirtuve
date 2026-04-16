@@ -26,7 +26,7 @@ export function UserMenuContent({ user }: Props) {
 
     const onSettings = () => {
         cleanup();
-    }
+    };
 
     return (
         <>

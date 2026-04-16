@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('recipe_id')->constrained()->cascadeOnDelete();
-            $table->string('status')->index();
-            $table->timestamps();
+            $table->string('preference_status')->index();
+            $table->date('generation_date');
 
             $table->unique(['user_id', 'recipe_id']);
         });

@@ -24,11 +24,17 @@ type RecipeOption = {
     id: number;
     title: string;
     instructions: string;
-    preparation_time_minutes: number;
+    preparation_time: string;
     servings: number;
     difficulty: string;
-    calorie_count: number;
+    difficulty_label: string;
+    calorie_intake: number;
     status: string;
+    status_label: string;
+    diet_type: string;
+    diet_type_label: string;
+    meal: string;
+    meal_label: string;
 };
 
 type StatusOption = {
@@ -87,7 +93,7 @@ export default function CreatePreference({
                                         />
                                         <input
                                             type="hidden"
-                                            name="status"
+                                            name="preference_status"
                                             value={status}
                                         />
 
@@ -156,7 +162,9 @@ export default function CreatePreference({
                                                 </SelectContent>
                                             </Select>
                                             <InputError
-                                                message={errors.status}
+                                                message={
+                                                    errors.preference_status
+                                                }
                                             />
                                         </div>
 
@@ -207,25 +215,31 @@ export default function CreatePreference({
 
                                     <div className="flex flex-wrap gap-2 text-xs">
                                         <Badge variant="outline">
-                                            {selectedRecipe.difficulty}
+                                            {selectedRecipe.difficulty_label}
                                         </Badge>
                                         <Badge variant="outline">
-                                            {
-                                                selectedRecipe.preparation_time_minutes
-                                            }{' '}
-                                            min
+                                            {selectedRecipe.preparation_time}
                                         </Badge>
                                         <Badge variant="outline">
                                             {selectedRecipe.servings} servings
                                         </Badge>
                                         <Badge variant="outline">
-                                            {selectedRecipe.calorie_count} kcal
+                                            {selectedRecipe.calorie_intake} kcal
+                                        </Badge>
+                                        <Badge variant="outline">
+                                            {selectedRecipe.diet_type_label}
+                                        </Badge>
+                                        <Badge variant="outline">
+                                            {selectedRecipe.meal_label}
+                                        </Badge>
+                                        <Badge variant="outline">
+                                            {selectedRecipe.status_label}
                                         </Badge>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-                                    No published recipes are currently available
+                                    No accepted recipes are currently available
                                     for new preferences.
                                 </div>
                             )}

@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('instructions');
-            $table->unsignedSmallInteger('preparation_time_minutes');
+            $table->string('preparation_time');
             $table->unsignedTinyInteger('servings');
             $table->string('difficulty');
-            $table->unsignedInteger('calorie_count');
+            $table->unsignedInteger('calorie_intake');
             $table->string('status')->default('draft')->index();
+            $table->string('diet_type');
+            $table->string('meal');
             $table->timestamps();
         });
     }
