@@ -25,8 +25,9 @@ export default function RecipesIndex({
 }) {
     const [recipeBeingEdited, onOpenEditRecipe] =
         useState<RecipeListItem | null>(null);
-    const [recipeBeingDeleted, onDelete] =
-        useState<RecipeListItem | null>(null);
+    const [recipeBeingDeleted, onDelete] = useState<RecipeListItem | null>(
+        null,
+    );
 
     return (
         <>

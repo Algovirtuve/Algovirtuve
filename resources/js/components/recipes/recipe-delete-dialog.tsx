@@ -45,7 +45,11 @@ export function RecipeDeleteDialog({
                 </DialogHeader>
 
                 <DialogFooter>
-                    <Button type="button" variant="outline" onClick={onCancelDelete}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onCancelDelete}
+                    >
                         Cancel
                     </Button>
                     <Button variant="destructive" onClick={onConfirmDelete}>
