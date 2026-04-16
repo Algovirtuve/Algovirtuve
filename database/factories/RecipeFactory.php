@@ -24,15 +24,15 @@ class RecipeFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'title' => fake()->unique()->sentence(3),
-            'instructions' => fake()->paragraphs(3, true),
-            'preparation_time' => fake()->numberBetween(10, 120).' minutes',
-            'servings' => fake()->numberBetween(1, 8),
-            'difficulty' => fake()->randomElement(RecipeDifficulty::cases()),
-            'calorie_intake' => fake()->numberBetween(250, 950),
-            'status' => fake()->randomElement(RecipeStatus::cases()),
-            'diet_type' => fake()->randomElement(DietType::cases()),
-            'meal' => fake()->randomElement(Meal::cases()),
+            'title' => $this->faker->unique()->sentence(3),
+            'instructions' => $this->faker->paragraphs(3, true),
+            'preparation_time' => $this->faker->numberBetween(10, 120).' minutes',
+            'servings' => $this->faker->numberBetween(1, 8),
+            'difficulty' => $this->faker->randomElement(RecipeDifficulty::cases()),
+            'calorie_intake' => $this->faker->numberBetween(250, 950),
+            'status' => $this->faker->randomElement(RecipeStatus::cases()),
+            'diet_type' => $this->faker->randomElement(DietType::cases()),
+            'meal' => $this->faker->randomElement(Meal::cases()),
         ];
     }
 }
