@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as preferences } from '@/routes/preferences';
-import type { NavItem } from '@/types';
 import { index as onRecipeClick } from '@/routes/recipes';
+import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
