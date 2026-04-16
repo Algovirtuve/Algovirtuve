@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Concerns\PasswordValidationRules;
-use App\Concerns\ProfileValidationRules;
+use App\Http\Requests\StoreNewPasswordRequest;
+use App\Http\Requests\StorePasswordResetLinkRequest;
+use App\Http\Requests\StoreSessionRequest;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
@@ -12,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -20,8 +22,6 @@ use Inertia\Response;
 
 class AuthController extends Controller
 {
-    use PasswordValidationRules, ProfileValidationRules;
-
     public function createSession(Request $request): Response
     {
         return Inertia::render('auth/login', [
@@ -29,36 +29,19 @@ class AuthController extends Controller
         ]);
     }
 
-    public function storeSession(Request $request): RedirectResponse
+    public function storeSession(StoreSessionRequest $request): RedirectResponse
     {
-        $request->merge([
-            'remember' => $request->boolean('remember'),
-        ]);
-
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-            'remember' => ['nullable', 'boolean'],
-        ]);
-
-        $throttleKey = $this->throttleKey($request);
-
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            abort(429);
-        }
+        $credentials = $request->validated();
 
         if (! Auth::attempt([
             'email' => $credentials['email'],
             'password' => $credentials['password'],
         ], $request->boolean('remember'))) {
-            RateLimiter::hit($throttleKey);
-
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
-        RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
@@ -79,12 +62,9 @@ class AuthController extends Controller
         return Inertia::render('auth/register');
     }
 
-    public function storeUser(Request $request): RedirectResponse
+    public function storeUser(StoreUserRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            ...$this->profileRules(),
-            'password' => $this->passwordRules(),
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -107,11 +87,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function storePasswordResetLink(Request $request): RedirectResponse
+    public function storePasswordResetLink(StorePasswordResetLinkRequest $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
-        ]);
+        $credentials = $request->validated();
 
         $status = Password::sendResetLink($credentials);
 
@@ -132,13 +110,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function storeNewPassword(Request $request): RedirectResponse
+    public function storeNewPassword(StoreNewPasswordRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
-            'password' => $this->passwordRules(),
-        ]);
+        $validated = $request->validated();
 
         $status = Password::reset($validated, function (User $user, string $password): void {
             if (Hash::check($password, $user->password)) {
@@ -162,10 +136,5 @@ class AuthController extends Controller
         throw ValidationException::withMessages([
             'email' => __($status),
         ]);
-    }
-
-    private function throttleKey(Request $request): string
-    {
-        return md5('login'.Str::lower((string) $request->string('email')).'|'.$request->ip());
     }
 }

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthController::class, 'createSession'])->name('login');
-    Route::post('login', [AuthController::class, 'storeSession'])->name('login.store');
+    Route::post('login', [AuthController::class, 'storeSession'])->middleware('throttle:login')->name('login.store');
 
     Route::get('register', [AuthController::class, 'createUser'])->name('register');
     Route::post('register', [AuthController::class, 'storeUser'])->name('register.store');
