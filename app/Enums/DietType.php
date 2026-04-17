@@ -4,7 +4,6 @@ namespace App\Enums;
 
 enum DietType: string
 {
-    case Owned = 'owned';
     case Keto = 'keto';
     case Paleo = 'paleo';
     case IntermittentFasting = 'intermittent-fasting';
@@ -14,7 +13,6 @@ enum DietType: string
     public function label(): string
     {
         return match ($this) {
-            self::Owned => 'Owned',
             self::Keto => 'Keto',
             self::Paleo => 'Paleo',
             self::IntermittentFasting => 'Intermittent fasting',
