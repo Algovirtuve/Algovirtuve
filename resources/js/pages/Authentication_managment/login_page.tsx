@@ -1,4 +1,4 @@
-import { Form, Head, router } from '@inertiajs/react';
+import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -9,17 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import { request as onForget } from '@/routes/password';
 
 type Props = {
     status?: string;
 };
 
 export default function Login({ status }: Props) {
-    const onForgot = () => {
-        router.visit(request());
-    };
-
     return (
         <>
             <Head title="Log in" />
@@ -48,16 +44,11 @@ export default function Login({ status }: Props) {
                             </div>
 
                             <div className="grid gap-2">
-                                <div className="flex items-center">
+                                <div className="flex items-center justify-between">
                                     <Label htmlFor="password">Password</Label>
-                                    <Button
-                                        onClick={onForgot}
-                                        className="m-0 ml-auto cursor-pointer p-0 text-sm"
-                                        tabIndex={5}
-                                        variant="link"
-                                    >
+                                    <TextLink href={onForget()}>
                                         Forgot password?
-                                    </Button>
+                                    </TextLink>
                                 </div>
                                 <PasswordInput
                                     id="password"
