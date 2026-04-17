@@ -23,7 +23,7 @@ test('authenticated users can view their recipe page', function () {
 
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
-        ->component('recipes/index')
+        ->component('Health_managment/recipe_page')
         ->where('recipes.0.title', $ownedRecipe->title)
         ->where('recipes.0.difficulty_label', $ownedRecipe->difficulty->label())
         ->where('recipes.0.status_label', $ownedRecipe->status->label())
@@ -54,6 +54,10 @@ test('authenticated users can update their own recipe', function () {
     ]);
 
     $response->assertRedirect(route('recipes.index', absolute: false));
+    $response->assertSessionHas('toast', [
+        'type' => 'success',
+        'message' => 'Recipe updated successfully.',
+    ]);
 
     $this->assertDatabaseHas('recipes', [
         'id' => $recipe->id,
@@ -125,7 +129,7 @@ test('meal must be one of the allowed enum values', function () {
         'servings' => 2,
         'difficulty' => RecipeDifficulty::Easy->value,
         'calorie_intake' => 280,
-        'diet_type' => DietType::Owned->value,
+        'diet_type' => DietType::Keto->value,
         'meal' => 'brunch',
     ]);
 
@@ -145,7 +149,7 @@ test('users cannot update another users recipe', function () {
         'servings' => 2,
         'difficulty' => RecipeDifficulty::Easy->value,
         'calorie_intake' => 320,
-        'diet_type' => DietType::Owned->value,
+        'diet_type' => DietType::Vegetarian->value,
         'meal' => Meal::Lunch->value,
     ]);
 
@@ -164,6 +168,10 @@ test('authenticated users can delete their own recipe', function () {
     $response = $this->actingAs($user)->delete(route('recipes.destroy', $recipe));
 
     $response->assertRedirect(route('recipes.index', absolute: false));
+    $response->assertSessionHas('toast', [
+        'type' => 'success',
+        'message' => 'Recipe deleted successfully.',
+    ]);
     $this->assertDatabaseMissing('recipes', [
         'id' => $recipe->id,
     ]);

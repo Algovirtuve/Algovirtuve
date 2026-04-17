@@ -38,7 +38,7 @@ export const emptyRecipeForm: RecipeFormData = {
     servings: 1,
     difficulty: 'easy',
     calorie_intake: 0,
-    diet_type: 'owned',
+    diet_type: 'keto',
     meal: 'breakfast',
 };
 

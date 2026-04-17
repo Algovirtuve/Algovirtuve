@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Personalization;
 
 use App\Enums\PreferenceStatus;
 use App\Enums\RecipeStatus;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroyPreferenceRequest;
 use App\Http\Requests\StorePreferenceRequest;
 use App\Models\Preference;
@@ -13,13 +14,13 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class PreferenceController extends Controller
+class personalization_controller extends Controller
 {
     public function preferences(Request $request): Response
     {
         $user = $request->user();
 
-        return Inertia::render('preferences/index', [
+        return Inertia::render('Personalization/prefererences_page', [
             'preferences' => $user->preferences()
                 ->with('recipe')
                 ->latest('generation_date')
@@ -53,7 +54,7 @@ class PreferenceController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('preferences/create', [
+        return Inertia::render('Personalization/add_preference_page', [
             'recipes' => Recipe::query()
                 ->whereNotIn('id', $user->preferences()->select('recipe_id'))
                 ->where('status', RecipeStatus::Accepted->value)

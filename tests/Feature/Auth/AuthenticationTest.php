@@ -1,15 +1,20 @@
 <?php
 
 use App\Models\User;
+use Inertia\Testing\AssertableInertia as Assert;
 
 test('login screen can be rendered', function () {
     $response = $this->get(route('login'));
 
     $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('Authentication_managment/login_page')
+    );
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    /** @var User $user */
+    $user = User::factory()->createOne();
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,
@@ -21,7 +26,8 @@ test('users can authenticate using the login screen', function () {
 });
 
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    /** @var User $user */
+    $user = User::factory()->createOne();
 
     $this->post(route('login.store'), [
         'email' => $user->email,
@@ -32,7 +38,8 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
-    $user = User::factory()->create();
+    /** @var User $user */
+    $user = User::factory()->createOne();
 
     $response = $this->actingAs($user)->post(route('logout'));
 
@@ -41,7 +48,8 @@ test('users can logout', function () {
 });
 
 test('users are rate limited', function () {
-    $user = User::factory()->create();
+    /** @var User $user */
+    $user = User::factory()->createOne();
 
     foreach (range(1, 5) as $attempt) {
         $this->post(route('login.store'), [
@@ -59,7 +67,8 @@ test('users are rate limited', function () {
 });
 
 test('users can authenticate with remember me checked', function () {
-    $user = User::factory()->create();
+    /** @var User $user */
+    $user = User::factory()->createOne();
 
     $response = $this->post(route('login.store'), [
         'email' => $user->email,

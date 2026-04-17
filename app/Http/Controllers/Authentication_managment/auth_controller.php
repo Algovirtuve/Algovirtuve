@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Authentication_managment;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreNewPasswordRequest;
 use App\Http\Requests\StorePasswordResetLinkRequest;
 use App\Http\Requests\StoreSessionRequest;
@@ -19,11 +20,11 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class AuthController extends Controller
+class auth_controller extends Controller
 {
     public function createSession(Request $request): Response
     {
-        return Inertia::render('auth/login', [
+        return Inertia::render('Authentication_managment/login_page', [
             'status' => $request->session()->get('status'),
         ]);
     }
@@ -58,7 +59,7 @@ class AuthController extends Controller
 
     public function createUser(): Response
     {
-        return Inertia::render('auth/register');
+        return Inertia::render('Authentication_managment/register_page');
     }
 
     public function storeUser(StoreUserRequest $request): RedirectResponse
@@ -83,7 +84,7 @@ class AuthController extends Controller
 
     public function createPasswordResetLink(Request $request): Response
     {
-        return Inertia::render('auth/forgot-password', [
+        return Inertia::render('Authentication_managment/forgot_password_page', [
             'status' => $request->session()->get('status'),
         ]);
     }
@@ -105,7 +106,7 @@ class AuthController extends Controller
 
     public function createNewPassword(Request $request, string $token): Response
     {
-        return Inertia::render('auth/reset-password', [
+        return Inertia::render('Authentication_managment/password_change_page', [
             'email' => (string) $request->string('email'),
             'token' => $token,
         ]);
@@ -118,7 +119,7 @@ class AuthController extends Controller
         $status = Password::reset($validated, function (User $user, string $password): void {
             if (Hash::check($password, $user->password)) {
                 throw ValidationException::withMessages([
-                    'password' => __('The new password must be different from your current password.'),
+                    'password' => 'The new password must be different from your current password.',
                 ]);
             }
 

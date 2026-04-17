@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
-    Route::inertia('/', 'dashboard')->name('dashboard');
+    Route::inertia('/', 'main_page')->name('dashboard');
 });
 
 require __DIR__.'/auth.php';

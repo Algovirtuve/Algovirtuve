@@ -4,11 +4,15 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Inertia\Testing\AssertableInertia as Assert;
 
 test('reset password link screen can be rendered', function () {
     $response = $this->get(route('password.request'));
 
     $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('Authentication_managment/forgot_password_page')
+    );
 });
 
 test('reset password link can be requested', function () {
@@ -32,6 +36,9 @@ test('reset password screen can be rendered', function () {
         $response = $this->get(route('password.reset', $notification->token));
 
         $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Authentication_managment/password_change_page')
+        );
 
         return true;
     });

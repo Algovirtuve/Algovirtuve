@@ -22,7 +22,7 @@ test('authenticated users can view their preferences page', function () {
 
     $response->assertOk();
     $response->assertInertia(fn (Assert $page) => $page
-        ->component('preferences/index')
+        ->component('Personalization/prefererences_page')
         ->where('preferences.0.recipe.title', $recipe->title)
         ->where('preferences.0.preference_status', PreferenceStatus::Liked->value)
         ->where('preferences.0.status_label', PreferenceStatus::Liked->label())

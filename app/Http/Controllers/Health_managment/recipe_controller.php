@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Health_managment;
 
 use App\Enums\DietType;
 use App\Enums\Meal;
 use App\Enums\RecipeDifficulty;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroyRecipeRequest;
 use App\Http\Requests\UpdateRecipeRequest;
 use App\Models\Recipe;
@@ -13,13 +14,13 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class RecipeController extends Controller
+class recipe_controller extends Controller
 {
     public function index(Request $request): Response
     {
         $user = $request->user();
 
-        return Inertia::render('recipes/index', [
+        return Inertia::render('Health_managment/recipe_page', [
             'recipes' => $user->createdRecipes()
                 ->latest()
                 ->get()

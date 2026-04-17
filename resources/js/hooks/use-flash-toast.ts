@@ -3,11 +3,18 @@ import { useEffect } from 'react';
 import { toast } from 'sonner';
 import type { FlashToast } from '@/types/ui';
 
+function getFirstErrorMessage(errors: Record<string, string>): string | null {
+    const firstError = Object.values(errors)[0];
+
+    return firstError ?? null;
+}
+
 export function useFlashToast(): void {
     useEffect(() => {
-        return router.on('flash', (event) => {
-            const flash = (event as CustomEvent).detail?.flash;
-            const data = flash?.toast as FlashToast | undefined;
+        const removeSuccessListener = router.on('success', (event) => {
+            const data = event.detail.page.props.flash?.toast as
+                | FlashToast
+                | undefined;
 
             if (!data) {
                 return;
@@ -15,5 +22,32 @@ export function useFlashToast(): void {
 
             toast[data.type](data.message);
         });
+
+        const removeErrorListener = router.on('error', (event) => {
+            const message = getFirstErrorMessage(
+                event.detail.errors as Record<string, string>,
+            );
+
+            if (!message) {
+                return;
+            }
+
+            toast.error(message);
+        });
+
+        const removeNetworkErrorListener = router.on(
+            'networkError',
+            (event) => {
+                event.preventDefault();
+
+                toast.error('Something went wrong. Please try again.');
+            },
+        );
+
+        return () => {
+            removeSuccessListener();
+            removeErrorListener();
+            removeNetworkErrorListener();
+        };
     }, []);
 }
