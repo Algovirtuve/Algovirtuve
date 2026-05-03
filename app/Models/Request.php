@@ -13,6 +13,11 @@ class Request extends Model
         'user_id',
         'recipe_id',
         'administrator_id',
+        'date',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
     ];
 
     public $timestamps = false;
