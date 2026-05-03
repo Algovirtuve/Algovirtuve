@@ -64,6 +64,10 @@ return new class extends Migration
         Schema::create('store_product', function (Blueprint $table) {
             $table->id();
 
+            $table->double('price');
+            $table->unsignedInteger('quantity');
+
+            $table->foreignId('store_id')->constrained('stores')->cascadeOnDelete();
             $table->foreignId('shopping_plan_id')->constrained('shopping_plans')->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
         });
