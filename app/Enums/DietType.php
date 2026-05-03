@@ -10,6 +10,11 @@ enum DietType: string
     case Vegan = 'vegan';
     case Vegetarian = 'vegetarian';
 
+    public static function all(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
     public function label(): string
     {
         return match ($this) {

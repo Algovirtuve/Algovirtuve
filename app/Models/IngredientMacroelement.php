@@ -5,20 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class DietPlanMacroelement extends Model
+class IngredientMacroelement extends Model
 {
-    protected $table = 'diet_plan_macroelement';
-
-    public $timestamps = false;
+    protected $table = 'ingredient_macroelement';
 
     protected $fillable = [
-        'diet_plan_id',
+        'measurement',
+        'quantity',
+        'ingredient_id',
         'macroelement_id',
     ];
 
-    public function dietPlan(): BelongsTo
+    public $timestamps = false;
+
+    public function ingredient(): BelongsTo
     {
-        return $this->belongsTo(DietPlan::class);
+        return $this->belongsTo(Ingredient::class);
     }
 
     public function macroelement(): BelongsTo

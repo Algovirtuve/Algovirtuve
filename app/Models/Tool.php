@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ToolType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tool extends Model
@@ -21,5 +22,15 @@ class Tool extends Model
     public function product(): HasOne
     {
         return $this->hasOne(Product::class);
+    }
+
+    public function recipes(): BelongsToMany
+    {
+        return $this->belongsToMany(Recipe::class, 'recipe_tool');
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_tool');
     }
 }

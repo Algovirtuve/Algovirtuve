@@ -68,4 +68,37 @@ class Recipe extends Model
         return $this->belongsToMany(User::class, 'preferences')
             ->withPivot(['id', 'preference_status', 'generation_date']);
     }
+
+    /**
+     * @return BelongsToMany<DietPlan, $this>
+     */
+    public function dietPlans(): BelongsToMany
+    {
+        return $this->belongsToMany(DietPlan::class, 'diet_plan_recipe');
+    }
+
+    /**
+     * @return BelongsToMany<Tool, $this>
+     */
+    public function tools(): BelongsToMany
+    {
+        return $this->belongsToMany(Tool::class, 'recipe_tool');
+    }
+
+    /**
+     * @return BelongsToMany<Ingredient, $this>
+     */
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'recipe_ingredient')
+            ->withPivot(['quantity', 'measurement', 'importance']);
+    }
+
+    /**
+     * @return HasMany<RecipeIngredient, $this>
+     */
+    public function recipeIngredients(): HasMany
+    {
+        return $this->hasMany(RecipeIngredient::class);
+    }
 }

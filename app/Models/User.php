@@ -64,4 +64,36 @@ class User extends Authenticatable
         return $this->preferredRecipes()
             ->wherePivot('preference_status', PreferenceStatus::Liked->value);
     }
+
+    public function shoppingPlans(): HasMany
+    {
+        return $this->hasMany(ShoppingPlan::class);
+    }
+
+    public function tools(): BelongsToMany
+    {
+        return $this->belongsToMany(Tool::class, 'user_tool');
+    }
+
+    public function macroelements(): BelongsToMany
+    {
+        return $this->belongsToMany(Macroelement::class, 'user_macroelement')
+            ->withPivot(['measurement', 'daily_rate']);
+    }
+
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'user_ingredient')
+            ->withPivot(['quantity', 'expiry_date']);
+    }
+
+    public function userMacroelements(): HasMany
+    {
+        return $this->hasMany(UserMacroelement::class);
+    }
+
+    public function userIngredients(): HasMany
+    {
+        return $this->hasMany(UserIngredient::class);
+    }
 }
