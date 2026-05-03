@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\ToolType;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tool extends Model

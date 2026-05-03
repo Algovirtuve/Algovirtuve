@@ -18,6 +18,7 @@ class Store extends Model
     {
         return $this->hasMany(ShoppingCart::class);
     }
+
     public function storeProducts()
     {
         return $this->hasMany(StoreProduct::class);
