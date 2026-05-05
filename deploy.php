@@ -68,14 +68,6 @@ task('deploy', [
     // Public folder symlink
     'artisan:storage:link',
 
-    // Optimizations
-    'artisan:cache:clear',
-    'artisan:config:cache',
-    'artisan:route:cache',
-    'artisan:view:cache',
-    'artisan:event:cache',
-    'artisan:optimize',
-
     // Migration
     'artisan:migrate',
 
