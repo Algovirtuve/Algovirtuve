@@ -19,7 +19,7 @@ class PreferenceResource extends JsonResource
             'preference_status' => $this->preference_status->value,
             'status_label' => $this->preference_status->label(),
             'generation_date' => $this->generation_date?->toDateString(),
-            'recipe' => RecipeResource::make($this->recipe),
+            'recipe' => RecipeResource::make($this->recipe)->resolve($request),
         ];
     }
 }
