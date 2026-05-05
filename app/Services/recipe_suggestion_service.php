@@ -18,6 +18,7 @@ class recipe_suggestion_service
      *     ingredient_ids: list<int>,
      *     tool_ids: list<int>,
      *     preferred_diet_types: list<string>,
+     *     liked_ingredient_ids: list<int>,
      *     disliked_ingredient_ids: list<int>,
      *     recipes: list<Recipe>
      * }  $suggestionContext
@@ -113,6 +114,7 @@ class recipe_suggestion_service
      *     ingredient_ids: list<int>,
      *     tool_ids: list<int>,
      *     preferred_diet_types: list<string>,
+     *     liked_ingredient_ids: list<int>,
      *     disliked_ingredient_ids: list<int>,
      *     recipes: list<Recipe>
      * }  $suggestionContext
@@ -196,6 +198,7 @@ class recipe_suggestion_service
      *     ingredient_ids: list<int>,
      *     tool_ids: list<int>,
      *     preferred_diet_types: list<string>,
+     *     liked_ingredient_ids: list<int>,
      *     disliked_ingredient_ids: list<int>
      * } $userContext
      * @return array{
@@ -223,6 +226,7 @@ class recipe_suggestion_service
         $availableIngredientIds = array_values(array_intersect($recipeIngredientIds, $userContext['ingredient_ids']));
         $missingIngredientIds = array_values(array_diff($requiredIngredientIds, $userContext['ingredient_ids']));
         $matchedToolIds = array_values(array_intersect($recipeToolIds, $userContext['tool_ids']));
+        $likedIngredientOverlap = array_values(array_intersect($recipeIngredientIds, $userContext['liked_ingredient_ids']));
         $dislikedIngredientOverlap = array_values(array_intersect($recipeIngredientIds, $userContext['disliked_ingredient_ids']));
 
         $score = count($availableIngredientIds) + count($matchedToolIds);
@@ -242,6 +246,8 @@ class recipe_suggestion_service
         if (in_array($recipe->diet_type->value, $userContext['preferred_diet_types'], true)) {
             $score += 6;
         }
+
+        $score += count($likedIngredientOverlap) * 2;
 
         $score -= count($dislikedIngredientOverlap) * 10;
 

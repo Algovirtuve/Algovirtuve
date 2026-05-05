@@ -64,7 +64,7 @@ test('suggestion generation uses concurrency for startup database queries', func
 
     Concurrency::shouldReceive('run')
         ->once()
-        ->withArgs(static fn (array $tasks): bool => count($tasks) === 5)
+        ->withArgs(static fn (array $tasks): bool => count($tasks) === 6)
         ->andReturnUsing(function (array $tasks) use ($syncDriver): array {
             return $syncDriver->run($tasks);
         });

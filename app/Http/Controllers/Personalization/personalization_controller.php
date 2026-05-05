@@ -248,6 +248,7 @@ class personalization_controller extends Controller
      *     ingredient_ids: list<int>,
      *     tool_ids: list<int>,
      *     preferred_diet_types: list<string>,
+     *     liked_ingredient_ids: list<int>,
      *     disliked_ingredient_ids: list<int>,
      *     recipes: list<Recipe>
      * }
@@ -258,6 +259,7 @@ class personalization_controller extends Controller
             'ingredient_ids' => static fn (): array => self::ingredientIdsForUser($user),
             'tool_ids' => static fn (): array => self::toolIdsForUser($user),
             'preferred_diet_types' => static fn (): array => self::preferredDietTypesForUser($user),
+            'liked_ingredient_ids' => static fn (): array => self::likedIngredientIdsForUser($user),
             'disliked_ingredient_ids' => static fn (): array => self::dislikedIngredientIdsForUser($user),
             'recipes' => static fn (): array => self::availableSuggestionRecipesForUser($user),
         ];
@@ -301,6 +303,23 @@ class personalization_controller extends Controller
             ->get()
             ->map(static fn (Preference $preference): ?string => $preference->recipe?->diet_type?->value)
             ->filter()
+            ->values()
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function likedIngredientIdsForUser(User $user): array
+    {
+        return Preference::query()
+            ->whereBelongsTo($user)
+            ->where('preference_status', PreferenceStatus::Liked->value)
+            ->with('recipe.ingredients:id')
+            ->get()
+            ->flatMap(static fn (Preference $preference): Collection => $preference->recipe?->ingredients->pluck('id') ?? collect())
+            ->map(static fn (mixed $id): int => (int) $id)
             ->values()
             ->unique()
             ->all();
