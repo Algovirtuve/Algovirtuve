@@ -25,6 +25,7 @@ class RecipeFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => $this->faker->unique()->sentence(3),
+            'image_path' => null,
             'instructions' => $this->faker->paragraphs(3, true),
             'preparation_time' => $this->faker->numberBetween(10, 120).' minutes',
             'servings' => $this->faker->numberBetween(1, 8),
