@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\RecipeResource;
 use App\Models\Recipe;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
@@ -186,7 +187,7 @@ class recipe_suggestion_service
             'missing_ingredients_count' => $rankedRecipe['missing_ingredients_count'],
             'matched_tools_count' => $rankedRecipe['matched_tools_count'],
             'available_ingredients_count' => $rankedRecipe['available_ingredients_count'],
-            'recipe' => $this->serializeRecipe($recipe),
+            'recipe' => RecipeResource::make($recipe)->resolve(),
         ];
     }
 
@@ -249,57 +250,6 @@ class recipe_suggestion_service
             'available_ingredient_ids' => $availableIngredientIds,
             'missing_ingredient_ids' => $missingIngredientIds,
             'matched_tool_ids' => $matchedToolIds,
-        ];
-    }
-
-    /**
-     * @return array{
-     *     id: int,
-     *     title: string,
-     *     image_url: ?string,
-     *     instructions: string,
-     *     preparation_time: string,
-     *     servings: int,
-     *     difficulty: string,
-     *     difficulty_label: string,
-     *     calorie_intake: int,
-     *     status: string,
-     *     status_label: string,
-     *     diet_type: string,
-     *     diet_type_label: string,
-     *     meal: string,
-     *     meal_label: string,
-     *     ingredients: list<array{id: int, title: string, importance: bool}>,
-     *     tools: list<array{id: int, title: string}>
-     * }
-     */
-    private function serializeRecipe(Recipe $recipe): array
-    {
-        return [
-            'id' => $recipe->id,
-            'title' => $recipe->title,
-            'image_url' => $recipe->image_path === null ? null : asset('storage/'.$recipe->image_path),
-            'instructions' => $recipe->instructions,
-            'preparation_time' => $recipe->preparation_time,
-            'servings' => $recipe->servings,
-            'difficulty' => $recipe->difficulty->value,
-            'difficulty_label' => $recipe->difficulty->label(),
-            'calorie_intake' => $recipe->calorie_intake,
-            'status' => $recipe->status->value,
-            'status_label' => $recipe->status->label(),
-            'diet_type' => $recipe->diet_type->value,
-            'diet_type_label' => $recipe->diet_type->label(),
-            'meal' => $recipe->meal->value,
-            'meal_label' => $recipe->meal->label(),
-            'ingredients' => $recipe->ingredients->map(static fn ($ingredient): array => [
-                'id' => $ingredient->id,
-                'title' => $ingredient->product?->title ?? 'Ingredient',
-                'importance' => (bool) $ingredient->pivot?->importance,
-            ])->values()->all(),
-            'tools' => $recipe->tools->map(static fn ($tool): array => [
-                'id' => $tool->id,
-                'title' => $tool->product?->title ?? $tool->type->value,
-            ])->values()->all(),
         ];
     }
 

@@ -9,6 +9,9 @@ use App\Http\Requests\DestroyPreferenceRequest;
 use App\Http\Requests\DislikeSuggestionRequest;
 use App\Http\Requests\LikeSuggestionRequest;
 use App\Http\Requests\StorePreferenceRequest;
+use App\Http\Resources\PreferenceResource;
+use App\Http\Resources\RecipeResource;
+use App\Http\Resources\SuggestionResource;
 use App\Models\Preference;
 use App\Models\Recipe;
 use App\Models\User;
@@ -31,7 +34,7 @@ class personalization_controller extends Controller
                 ->with(['recipe.ingredients.product', 'recipe.tools.product'])
                 ->latest('generation_date')
                 ->get()
-                ->map(fn (Preference $preference): array => $this->serializePreference($preference)),
+                ->map(fn (Preference $preference): array => PreferenceResource::make($preference)->resolve()),
         ]);
     }
 
@@ -45,7 +48,7 @@ class personalization_controller extends Controller
                 ->where('status', RecipeStatus::Accepted->value)
                 ->orderBy('title')
                 ->get()
-                ->map(fn (Recipe $recipe): array => $this->serializeRecipe($recipe)),
+                ->map(fn (Recipe $recipe): array => RecipeResource::make($recipe)->resolve()),
             'statuses' => collect([PreferenceStatus::Liked, PreferenceStatus::Disliked])
                 ->map(fn (PreferenceStatus $status): array => [
                     'value' => $status->value,
@@ -168,7 +171,7 @@ class personalization_controller extends Controller
     private function renderSuggestionPage(User $user, ?array $suggestion, recipe_suggestion_service $recipeSuggestionService, ?array $toast = null): Response
     {
         return Inertia::render('Personalization/recipe_suggestion_page', [
-            'suggestion' => $this->activateSuggestion($user, $suggestion),
+            'suggestion' => $this->transformSuggestion($user, $suggestion),
             'remaining_suggestions_count' => $recipeSuggestionService->remainingSuggestionCount($user),
             'flash' => [
                 'toast' => $toast,
@@ -197,7 +200,7 @@ class personalization_controller extends Controller
      *     recipe: array<string, mixed>
      * }|null
      */
-    private function activateSuggestion(User $user, ?array $suggestion): ?array
+    private function transformSuggestion(User $user, ?array $suggestion): ?array
     {
         if ($suggestion === null) {
             return null;
@@ -205,7 +208,7 @@ class personalization_controller extends Controller
 
         $preference = $this->resolveAwaitingSuggestionPreference($user, $suggestion['recipe_id']);
 
-        return [
+        return SuggestionResource::make([
             'id' => $preference->id,
             'preference_status' => PreferenceStatus::Awaiting->value,
             'status_label' => PreferenceStatus::Awaiting->label(),
@@ -215,7 +218,7 @@ class personalization_controller extends Controller
             'matched_tools_count' => $suggestion['matched_tools_count'],
             'available_ingredients_count' => $suggestion['available_ingredients_count'],
             'recipe' => $suggestion['recipe'],
-        ];
+        ])->resolve();
     }
 
     private function resolveAwaitingSuggestionPreference(User $user, int $recipeId): Preference
@@ -238,26 +241,6 @@ class personalization_controller extends Controller
             'preference_status' => PreferenceStatus::Awaiting,
             'generation_date' => now()->toDateString(),
         ]);
-    }
-
-    private function recipeImageUrl(Recipe $recipe): ?string
-    {
-        if ($recipe->image_path === null) {
-            return null;
-        }
-
-        return asset('storage/'.$recipe->image_path);
-    }
-
-    private function serializePreference(Preference $preference): array
-    {
-        return [
-            'id' => $preference->id,
-            'preference_status' => $preference->preference_status->value,
-            'status_label' => $preference->preference_status->label(),
-            'generation_date' => $preference->generation_date?->toDateString(),
-            'recipe' => $this->serializeRecipe($preference->recipe),
-        ];
     }
 
     /**
@@ -357,39 +340,5 @@ class personalization_controller extends Controller
             ->with(['ingredients.product', 'tools.product'])
             ->get()
             ->all();
-    }
-
-    private function serializeRecipe(Recipe $recipe): array
-    {
-        return [
-            'id' => $recipe->id,
-            'title' => $recipe->title,
-            'image_url' => $this->recipeImageUrl($recipe),
-            'instructions' => $recipe->instructions,
-            'preparation_time' => $recipe->preparation_time,
-            'servings' => $recipe->servings,
-            'difficulty' => $recipe->difficulty->value,
-            'difficulty_label' => $recipe->difficulty->label(),
-            'calorie_intake' => $recipe->calorie_intake,
-            'status' => $recipe->status->value,
-            'status_label' => $recipe->status->label(),
-            'diet_type' => $recipe->diet_type->value,
-            'diet_type_label' => $recipe->diet_type->label(),
-            'meal' => $recipe->meal->value,
-            'meal_label' => $recipe->meal->label(),
-            'ingredients' => $recipe->relationLoaded('ingredients')
-                ? $recipe->ingredients->map(static fn ($ingredient): array => [
-                    'id' => $ingredient->id,
-                    'title' => $ingredient->product?->title ?? 'Ingredient',
-                    'importance' => (bool) $ingredient->pivot?->importance,
-                ])->values()->all()
-                : [],
-            'tools' => $recipe->relationLoaded('tools')
-                ? $recipe->tools->map(static fn ($tool): array => [
-                    'id' => $tool->id,
-                    'title' => $tool->product?->title ?? $tool->type->value,
-                ])->values()->all()
-                : [],
-        ];
     }
 }
