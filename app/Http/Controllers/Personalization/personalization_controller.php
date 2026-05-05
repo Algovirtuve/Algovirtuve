@@ -6,11 +6,20 @@ use App\Enums\PreferenceStatus;
 use App\Enums\RecipeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestroyPreferenceRequest;
+use App\Http\Requests\DislikeSuggestionRequest;
+use App\Http\Requests\LikeSuggestionRequest;
 use App\Http\Requests\StorePreferenceRequest;
+use App\Http\Resources\PreferenceResource;
+use App\Http\Resources\RecipeResource;
+use App\Http\Resources\SuggestionResource;
 use App\Models\Preference;
 use App\Models\Recipe;
+use App\Models\User;
+use App\Services\recipe_suggestion_service;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Concurrency;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,33 +29,12 @@ class personalization_controller extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('Personalization/prefererences_page', [
+        return Inertia::render('Personalization/preferences_page', [
             'preferences' => $user->preferences()
-                ->with('recipe')
+                ->with(['recipe.ingredients.product', 'recipe.tools.product'])
                 ->latest('generation_date')
                 ->get()
-                ->map(fn (Preference $preference): array => [
-                    'id' => $preference->id,
-                    'preference_status' => $preference->preference_status->value,
-                    'status_label' => $preference->preference_status->label(),
-                    'generation_date' => $preference->generation_date?->toDateString(),
-                    'recipe' => [
-                        'id' => $preference->recipe->id,
-                        'title' => $preference->recipe->title,
-                        'instructions' => $preference->recipe->instructions,
-                        'preparation_time' => $preference->recipe->preparation_time,
-                        'servings' => $preference->recipe->servings,
-                        'difficulty' => $preference->recipe->difficulty->value,
-                        'difficulty_label' => $preference->recipe->difficulty->label(),
-                        'calorie_intake' => $preference->recipe->calorie_intake,
-                        'status' => $preference->recipe->status->value,
-                        'status_label' => $preference->recipe->status->label(),
-                        'diet_type' => $preference->recipe->diet_type->value,
-                        'diet_type_label' => $preference->recipe->diet_type->label(),
-                        'meal' => $preference->recipe->meal->value,
-                        'meal_label' => $preference->recipe->meal->label(),
-                    ],
-                ]),
+                ->map(fn (Preference $preference): array => PreferenceResource::make($preference)->resolve()),
         ]);
     }
 
@@ -60,22 +48,7 @@ class personalization_controller extends Controller
                 ->where('status', RecipeStatus::Accepted->value)
                 ->orderBy('title')
                 ->get()
-                ->map(fn (Recipe $recipe): array => [
-                    'id' => $recipe->id,
-                    'title' => $recipe->title,
-                    'instructions' => $recipe->instructions,
-                    'preparation_time' => $recipe->preparation_time,
-                    'servings' => $recipe->servings,
-                    'difficulty' => $recipe->difficulty->value,
-                    'difficulty_label' => $recipe->difficulty->label(),
-                    'calorie_intake' => $recipe->calorie_intake,
-                    'status' => $recipe->status->value,
-                    'status_label' => $recipe->status->label(),
-                    'diet_type' => $recipe->diet_type->value,
-                    'diet_type_label' => $recipe->diet_type->label(),
-                    'meal' => $recipe->meal->value,
-                    'meal_label' => $recipe->meal->label(),
-                ]),
+                ->map(fn (Recipe $recipe): array => RecipeResource::make($recipe)->resolve()),
             'statuses' => collect([PreferenceStatus::Liked, PreferenceStatus::Disliked])
                 ->map(fn (PreferenceStatus $status): array => [
                     'value' => $status->value,
@@ -103,12 +76,288 @@ class personalization_controller extends Controller
     {
         $request->validated();
 
-        $preference->delete();
+        Preference::query()->whereKey($preference->getKey())->delete();
 
         return redirect(route('preferences.index', absolute: false))
             ->with('toast', [
                 'type' => 'success',
                 'message' => 'Preference removed successfully.',
             ]);
+    }
+
+    public function suggestions(Request $request, recipe_suggestion_service $recipeSuggestionService): Response
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return $this->renderSuggestionPage(
+            $user,
+            $recipeSuggestionService->generateSuggestions($user, $this->loadSuggestionContext($user)),
+            $recipeSuggestionService,
+        );
+    }
+
+    public function likeSuggestion(LikeSuggestionRequest $request, Preference $preference, recipe_suggestion_service $recipeSuggestionService): Response
+    {
+        $request->validated();
+
+        return $this->storeSuggestionDecision(
+            $request,
+            $preference,
+            PreferenceStatus::Liked,
+            'Recipe added to liked preferences.',
+            $recipeSuggestionService,
+        );
+    }
+
+    public function dislikeSuggestion(DislikeSuggestionRequest $request, Preference $preference, recipe_suggestion_service $recipeSuggestionService): Response
+    {
+        $request->validated();
+
+        return $this->storeSuggestionDecision(
+            $request,
+            $preference,
+            PreferenceStatus::Disliked,
+            'Recipe added to disliked preferences.',
+            $recipeSuggestionService,
+        );
+    }
+
+    private function storeSuggestionDecision(
+        Request $request,
+        Preference $preference,
+        PreferenceStatus $status,
+        string $message,
+        recipe_suggestion_service $recipeSuggestionService,
+    ): Response {
+        /** @var User $user */
+        $user = $request->user();
+
+        $preference->forceFill([
+            'preference_status' => $status,
+            'generation_date' => now()->toDateString(),
+        ])->save();
+
+        return $this->renderNextSuggestionPage($user, $recipeSuggestionService, [
+            'type' => 'success',
+            'message' => $message,
+        ]);
+    }
+
+    /**
+     * @param  array{type: string, message: string}|null  $toast
+     */
+    private function renderNextSuggestionPage(User $user, recipe_suggestion_service $recipeSuggestionService, ?array $toast = null): Response
+    {
+        return $this->renderSuggestionPage(
+            $user,
+            $recipeSuggestionService->removeSuggestion($user),
+            $recipeSuggestionService,
+            $toast,
+        );
+    }
+
+    /**
+     * @param  array{
+     *     recipe_id: int,
+     *     score: int,
+     *     missing_ingredients_count: int,
+     *     matched_tools_count: int,
+     *     available_ingredients_count: int,
+     *     recipe: array<string, mixed>
+     * }|null  $suggestion
+     * @param  array{type: string, message: string}|null  $toast
+     */
+    private function renderSuggestionPage(User $user, ?array $suggestion, recipe_suggestion_service $recipeSuggestionService, ?array $toast = null): Response
+    {
+        return Inertia::render('Personalization/recipe_suggestion_page', [
+            'suggestion' => $this->transformSuggestion($user, $suggestion),
+            'remaining_suggestions_count' => $recipeSuggestionService->remainingSuggestionCount($user),
+            'flash' => [
+                'toast' => $toast,
+            ],
+        ]);
+    }
+
+    /**
+     * @param  array{
+     *     recipe_id: int,
+     *     score: int,
+     *     missing_ingredients_count: int,
+     *     matched_tools_count: int,
+     *     available_ingredients_count: int,
+     *     recipe: array<string, mixed>
+     * }|null  $suggestion
+     * @return array{
+     *     id: int,
+     *     preference_status: string,
+     *     status_label: string,
+     *     generation_date: string,
+     *     score: int,
+     *     missing_ingredients_count: int,
+     *     matched_tools_count: int,
+     *     available_ingredients_count: int,
+     *     recipe: array<string, mixed>
+     * }|null
+     */
+    private function transformSuggestion(User $user, ?array $suggestion): ?array
+    {
+        if ($suggestion === null) {
+            return null;
+        }
+
+        $preference = $this->resolveAwaitingSuggestionPreference($user, $suggestion['recipe_id']);
+
+        return SuggestionResource::make([
+            'id' => $preference->id,
+            'preference_status' => PreferenceStatus::Awaiting->value,
+            'status_label' => PreferenceStatus::Awaiting->label(),
+            'generation_date' => $preference->generation_date?->toDateString() ?? now()->toDateString(),
+            'score' => $suggestion['score'],
+            'missing_ingredients_count' => $suggestion['missing_ingredients_count'],
+            'matched_tools_count' => $suggestion['matched_tools_count'],
+            'available_ingredients_count' => $suggestion['available_ingredients_count'],
+            'recipe' => $suggestion['recipe'],
+        ])->resolve();
+    }
+
+    private function resolveAwaitingSuggestionPreference(User $user, int $recipeId): Preference
+    {
+        $existingPreference = $user->preferences()
+            ->where('preference_status', PreferenceStatus::Awaiting->value)
+            ->where('recipe_id', $recipeId)
+            ->first();
+
+        if ($existingPreference instanceof Preference) {
+            return $existingPreference;
+        }
+
+        $user->preferences()
+            ->where('preference_status', PreferenceStatus::Awaiting->value)
+            ->delete();
+
+        return $user->preferences()->create([
+            'recipe_id' => $recipeId,
+            'preference_status' => PreferenceStatus::Awaiting,
+            'generation_date' => now()->toDateString(),
+        ]);
+    }
+
+    /**
+     * @return array{
+     *     ingredient_ids: list<int>,
+     *     tool_ids: list<int>,
+     *     preferred_diet_types: list<string>,
+     *     liked_ingredient_ids: list<int>,
+     *     disliked_ingredient_ids: list<int>,
+     *     recipes: list<Recipe>
+     * }
+     */
+    private function loadSuggestionContext(User $user): array
+    {
+        $tasks = [
+            'ingredient_ids' => static fn (): array => self::ingredientIdsForUser($user),
+            'tool_ids' => static fn (): array => self::toolIdsForUser($user),
+            'preferred_diet_types' => static fn (): array => self::preferredDietTypesForUser($user),
+            'liked_ingredient_ids' => static fn (): array => self::likedIngredientIdsForUser($user),
+            'disliked_ingredient_ids' => static fn (): array => self::dislikedIngredientIdsForUser($user),
+            'recipes' => static fn (): array => self::availableSuggestionRecipesForUser($user),
+        ];
+
+        return Concurrency::run($tasks);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function ingredientIdsForUser(User $user): array
+    {
+        return $user->ingredients()
+            ->pluck('ingredients.id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function toolIdsForUser(User $user): array
+    {
+        return $user->tools()
+            ->pluck('tools.id')
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function preferredDietTypesForUser(User $user): array
+    {
+        return Preference::query()
+            ->whereBelongsTo($user)
+            ->where('preference_status', PreferenceStatus::Liked->value)
+            ->with('recipe:id,diet_type')
+            ->get()
+            ->map(static fn (Preference $preference): ?string => $preference->recipe?->diet_type?->value)
+            ->filter()
+            ->values()
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function likedIngredientIdsForUser(User $user): array
+    {
+        return Preference::query()
+            ->whereBelongsTo($user)
+            ->where('preference_status', PreferenceStatus::Liked->value)
+            ->with('recipe.ingredients:id')
+            ->get()
+            ->flatMap(static fn (Preference $preference): Collection => $preference->recipe?->ingredients->pluck('id') ?? collect())
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->values()
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * @return list<int>
+     */
+    private static function dislikedIngredientIdsForUser(User $user): array
+    {
+        return Preference::query()
+            ->whereBelongsTo($user)
+            ->where('preference_status', PreferenceStatus::Disliked->value)
+            ->with('recipe.ingredients:id')
+            ->get()
+            ->flatMap(static fn (Preference $preference): Collection => $preference->recipe?->ingredients->pluck('id') ?? collect())
+            ->map(static fn (mixed $id): int => (int) $id)
+            ->values()
+            ->unique()
+            ->all();
+    }
+
+    /**
+     * @return list<Recipe>
+     */
+    private static function availableSuggestionRecipesForUser(User $user): array
+    {
+        return Recipe::query()
+            ->where('status', RecipeStatus::Accepted->value)
+            ->whereNotIn(
+                'id',
+                Preference::query()
+                    ->whereBelongsTo($user)
+                    ->whereIn('preference_status', [PreferenceStatus::Liked->value, PreferenceStatus::Disliked->value])
+                    ->select('recipe_id'),
+            )
+            ->with(['ingredients.product', 'tools.product'])
+            ->get()
+            ->all();
     }
 }

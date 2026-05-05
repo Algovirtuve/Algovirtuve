@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Heart, LayoutGrid } from 'lucide-react';
+import { BookOpen, Heart, LayoutGrid, Sparkles } from 'lucide-react';
+import { suggestions as onRecipeSuggestions } from '@/actions/App/Http/Controllers/Personalization/personalization_controller';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -32,6 +33,11 @@ const mainNavItems: NavItem[] = [
         title: 'Recipes',
         href: onRecipeClick(),
         icon: BookOpen,
+    },
+    {
+        title: 'Recipe Suggestions',
+        href: onRecipeSuggestions(),
+        icon: Sparkles,
     },
 ];
 

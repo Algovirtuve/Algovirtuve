@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'user_id',
     'title',
+    'image_path',
     'instructions',
     'preparation_time',
     'servings',
