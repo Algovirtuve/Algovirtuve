@@ -65,8 +65,10 @@ type Suggestion = {
 
 const swipeThreshold = 0.58;
 const deckLayers = [{ scale: 0.92, y: 34, opacity: 0.35 }];
-const deckFrameClass = 'h-[min(72vh,52rem)] min-h-[30rem] xl:h-[calc(100vh-9rem)]';
-const panelCardClass = 'rounded-3xl border-white/10 bg-white/4 py-0 backdrop-blur-xl';
+const deckFrameClass =
+    'h-[min(72vh,52rem)] min-h-[30rem] xl:h-[calc(100vh-9rem)]';
+const panelCardClass =
+    'rounded-3xl border-white/10 bg-white/4 py-0 backdrop-blur-xl';
 const panelTitleClass =
     'text-xs font-bold tracking-widest text-muted-foreground uppercase';
 
@@ -319,9 +321,7 @@ export default function RecipeSuggestionPage({
                         <aside className="order-2 space-y-4 xl:order-1 xl:col-span-2">
                             <Card className={panelCardClass}>
                                 <CardContent className="space-y-4 px-4 py-5">
-                                    <p className={panelTitleClass}>
-                                        Quick fit
-                                    </p>
+                                    <p className={panelTitleClass}>Quick fit</p>
 
                                     <div className="grid grid-cols-2 gap-3">
                                         {fitStats.map((stat) => (
@@ -483,13 +483,17 @@ export default function RecipeSuggestionPage({
 
                                                 <motion.div
                                                     className="absolute top-5 left-5 rounded-full border border-emerald-300/60 bg-emerald-500/20 px-4 py-2 text-sm font-semibold tracking-widest text-emerald-100 backdrop-blur-md"
-                                                    style={{ opacity: likeOpacity }}
+                                                    style={{
+                                                        opacity: likeOpacity,
+                                                    }}
                                                 >
                                                     LIKE
                                                 </motion.div>
                                                 <motion.div
                                                     className="absolute top-5 right-5 rounded-full border border-rose-300/60 bg-rose-500/20 px-4 py-2 text-sm font-semibold tracking-widest text-rose-100 backdrop-blur-md"
-                                                    style={{ opacity: dislikeOpacity }}
+                                                    style={{
+                                                        opacity: dislikeOpacity,
+                                                    }}
                                                 >
                                                     NOPE
                                                 </motion.div>
@@ -531,19 +535,27 @@ export default function RecipeSuggestionPage({
                                                         </p>
 
                                                         <div className="grid grid-cols-2 gap-3 text-white sm:grid-cols-4">
-                                                            {recipeFacts.map((fact) => (
-                                                                <div
-                                                                    key={fact.label}
-                                                                    className="rounded-2xl border border-white/10 bg-white/6 p-3"
-                                                                >
-                                                                    <div className="mb-2 text-xs tracking-wider text-white/60 uppercase">
-                                                                        {fact.label}
+                                                            {recipeFacts.map(
+                                                                (fact) => (
+                                                                    <div
+                                                                        key={
+                                                                            fact.label
+                                                                        }
+                                                                        className="rounded-2xl border border-white/10 bg-white/6 p-3"
+                                                                    >
+                                                                        <div className="mb-2 text-xs tracking-wider text-white/60 uppercase">
+                                                                            {
+                                                                                fact.label
+                                                                            }
+                                                                        </div>
+                                                                        <p className="text-sm font-medium">
+                                                                            {
+                                                                                fact.value
+                                                                            }
+                                                                        </p>
                                                                     </div>
-                                                                    <p className="text-sm font-medium">
-                                                                        {fact.value}
-                                                                    </p>
-                                                                </div>
-                                                            ))}
+                                                                ),
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -579,9 +591,7 @@ export default function RecipeSuggestionPage({
 
                             <Card className={panelCardClass}>
                                 <CardContent className="space-y-3 px-4 py-5">
-                                    <p className={panelTitleClass}>
-                                        Tools
-                                    </p>
+                                    <p className={panelTitleClass}>Tools</p>
                                     <div className="flex flex-wrap gap-2">
                                         {visibleTools &&
                                         visibleTools.length > 0 ? (
