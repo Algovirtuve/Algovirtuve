@@ -250,6 +250,20 @@ export default function RecipeSuggestionPage({
         });
     }
 
+    function onLike(options?: {
+        releaseVelocity?: number;
+        useFlyAway?: boolean;
+    }) {
+        submitDecision('liked', options);
+    }
+
+    function onDislike(options?: {
+        releaseVelocity?: number;
+        useFlyAway?: boolean;
+    }) {
+        submitDecision('disliked', options);
+    }
+
     function handleDragEnd(
         _: MouseEvent | TouchEvent | PointerEvent,
         info: PanInfo,
@@ -258,7 +272,7 @@ export default function RecipeSuggestionPage({
         const swipeRatio = info.offset.x / width;
 
         if (swipeRatio >= swipeThreshold) {
-            submitDecision('liked', {
+            onLike({
                 releaseVelocity: info.velocity.x,
                 useFlyAway: true,
             });
@@ -267,7 +281,7 @@ export default function RecipeSuggestionPage({
         }
 
         if (swipeRatio <= -swipeThreshold) {
-            submitDecision('disliked', {
+            onDislike({
                 releaseVelocity: info.velocity.x,
                 useFlyAway: true,
             });

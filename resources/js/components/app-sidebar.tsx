@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { BookOpen, Heart, LayoutGrid, Sparkles } from 'lucide-react';
-import { suggestions as recipeSuggestions } from '@/actions/App/Http/Controllers/Personalization/personalization_controller';
+import { suggestions as onRecipeSuggestions } from '@/actions/App/Http/Controllers/Personalization/personalization_controller';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as preferences } from '@/routes/preferences';
-import { index as recipesIndex } from '@/routes/recipes';
+import { index as onRecipeClick } from '@/routes/recipes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -31,12 +31,12 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Recipes',
-        href: recipesIndex(),
+        href: onRecipeClick(),
         icon: BookOpen,
     },
     {
         title: 'Recipe Suggestions',
-        href: recipeSuggestions(),
+        href: onRecipeSuggestions(),
         icon: Sparkles,
     },
 ];
