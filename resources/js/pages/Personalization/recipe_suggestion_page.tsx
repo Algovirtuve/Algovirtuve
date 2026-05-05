@@ -547,30 +547,6 @@ export default function RecipeSuggestionPage({
                                                                     .instructions
                                                             }
                                                         </p>
-
-                                                        <div className="grid grid-cols-2 gap-3 text-white sm:grid-cols-4">
-                                                            {recipeFacts.map(
-                                                                (fact) => (
-                                                                    <div
-                                                                        key={
-                                                                            fact.label
-                                                                        }
-                                                                        className="rounded-2xl border border-white/10 bg-white/6 p-3"
-                                                                    >
-                                                                        <div className="mb-2 text-xs tracking-wider text-white/60 uppercase">
-                                                                            {
-                                                                                fact.label
-                                                                            }
-                                                                        </div>
-                                                                        <p className="text-sm font-medium">
-                                                                            {
-                                                                                fact.value
-                                                                            }
-                                                                        </p>
-                                                                    </div>
-                                                                ),
-                                                            )}
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
