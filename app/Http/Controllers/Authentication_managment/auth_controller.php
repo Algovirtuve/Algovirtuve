@@ -66,7 +66,7 @@ class auth_controller extends Controller
     {
         $validated = $request->validated();
 
-        $user = User::create([
+        $user = insert(User::class, [
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'username' => $validated['username'],
@@ -123,10 +123,14 @@ class auth_controller extends Controller
                 ]);
             }
 
-            $user->forceFill([
-                'password' => $password,
-                'remember_token' => Str::random(60),
-            ])->save();
+            User::query()
+                ->whereKey($user)
+                ->update([
+                    'password' => $password,
+                    'remember_token' => Str::random(60),
+                ]);
+
+            $user->refresh();
 
             event(new PasswordReset($user));
         });

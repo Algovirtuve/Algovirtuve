@@ -60,7 +60,7 @@ class personalization_controller extends Controller
 
     public function storePreference(StorePreferenceRequest $request): RedirectResponse
     {
-        $request->user()->preferences()->create([
+        insert($request->user()->preferences(), [
             ...$request->validated(),
             'generation_date' => now()->toDateString(),
         ]);
@@ -133,10 +133,10 @@ class personalization_controller extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $preference->forceFill([
+        $preference->update([
             'preference_status' => $status,
             'generation_date' => now()->toDateString(),
-        ])->save();
+        ]);
 
         return $this->renderNextSuggestionPage($user, $recipeSuggestionService, [
             'type' => 'success',
@@ -236,7 +236,7 @@ class personalization_controller extends Controller
             ->where('preference_status', PreferenceStatus::Awaiting->value)
             ->delete();
 
-        return $user->preferences()->create([
+        return insert($user->preferences(), [
             'recipe_id' => $recipeId,
             'preference_status' => PreferenceStatus::Awaiting,
             'generation_date' => now()->toDateString(),
