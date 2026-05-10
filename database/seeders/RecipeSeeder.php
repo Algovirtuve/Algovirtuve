@@ -28,6 +28,7 @@ class RecipeSeeder extends Seeder
     public function run(): void
     {
         $owner = User::query()->first() ?? User::factory()->createOne();
+
         $meals = collect($this->mealSummaries())
             ->chunk(self::DETAIL_BATCH_SIZE)
             ->flatMap(fn ($chunk): array => $this->fetchMealDetails($chunk->all()))

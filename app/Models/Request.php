@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\RequestFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Request extends Model
 {
+    /** @use HasFactory<RequestFactory> */
+    use HasFactory;
+
     protected $table = 'requests';
 
     protected $fillable = [
