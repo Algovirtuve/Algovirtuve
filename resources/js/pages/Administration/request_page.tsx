@@ -117,7 +117,9 @@ export default function RequestPage({ request }: { request: RequestDetails }) {
                                 </div>
 
                                 <div>
-                                    <div className="font-medium">Recipe owner</div>
+                                    <div className="font-medium">
+                                        Recipe owner
+                                    </div>
                                     <div className="text-muted-foreground">
                                         {request.recipe.owner.username ?? '—'}
                                         {request.recipe.owner.email
@@ -127,7 +129,9 @@ export default function RequestPage({ request }: { request: RequestDetails }) {
                                 </div>
 
                                 <div>
-                                    <div className="font-medium">Instructions</div>
+                                    <div className="font-medium">
+                                        Instructions
+                                    </div>
                                     <div className="whitespace-pre-wrap text-muted-foreground">
                                         {request.recipe.instructions}
                                     </div>

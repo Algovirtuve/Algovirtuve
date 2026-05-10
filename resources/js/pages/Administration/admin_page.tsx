@@ -50,7 +50,9 @@ export default function AdminPage({
                     <Card>
                         <CardHeader>
                             <CardTitle>Total requests</CardTitle>
-                            <CardDescription>All submitted requests.</CardDescription>
+                            <CardDescription>
+                                All submitted requests.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="text-3xl font-semibold">
                             {requests_count}
@@ -70,7 +72,9 @@ export default function AdminPage({
                     <Card>
                         <CardHeader>
                             <CardTitle>Approved</CardTitle>
-                            <CardDescription>Approved requests.</CardDescription>
+                            <CardDescription>
+                                Approved requests.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="text-3xl font-semibold">
                             {approved_requests_count}
@@ -80,7 +84,9 @@ export default function AdminPage({
                     <Card>
                         <CardHeader>
                             <CardTitle>Rejected</CardTitle>
-                            <CardDescription>Declined requests.</CardDescription>
+                            <CardDescription>
+                                Declined requests.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="text-3xl font-semibold">
                             {rejected_requests_count}
@@ -90,7 +96,9 @@ export default function AdminPage({
                     <Card>
                         <CardHeader>
                             <CardTitle>Users</CardTitle>
-                            <CardDescription>Total registered users.</CardDescription>
+                            <CardDescription>
+                                Total registered users.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="text-3xl font-semibold">
                             {users_count}

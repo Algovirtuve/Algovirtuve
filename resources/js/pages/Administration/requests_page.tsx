@@ -10,9 +10,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { dashboard } from '@/routes';
-import {
-    viewAdminPage,
-} from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
 import { viewRequest } from '@/actions/App/Http/Controllers/Administration/requests_controller';
 
 type RequestListItem = {
@@ -55,7 +53,8 @@ export default function RequestsPage({
                         <CardHeader>
                             <CardTitle>No requests</CardTitle>
                             <CardDescription>
-                                Requests will appear here once users submit them.
+                                Requests will appear here once users submit
+                                them.
                             </CardDescription>
                         </CardHeader>
                     </Card>
@@ -70,7 +69,8 @@ export default function RequestsPage({
                                                 `Request #${request.id}`}
                                         </CardTitle>
                                         <CardDescription>
-                                            {request.user.username ?? 'Unknown user'}
+                                            {request.user.username ??
+                                                'Unknown user'}
                                             {request.date
                                                 ? ` · ${request.date}`
                                                 : ''}
