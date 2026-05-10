@@ -1,7 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { Button } from '@/components/ui/button';
 import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import { Button } from '@/components/ui/button';
+import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { dashboard } from '@/routes';
 
 export default function MainPage() {

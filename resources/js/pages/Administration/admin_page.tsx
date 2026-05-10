@@ -1,4 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
+import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import { viewRequests } from '@/actions/App/Http/Controllers/Administration/requests_controller';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,8 +11,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { dashboard } from '@/routes';
-import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
-import { viewRequests } from '@/actions/App/Http/Controllers/Administration/requests_controller';
+
 
 export default function AdminPage({
     requests_count,

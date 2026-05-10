@@ -1,4 +1,10 @@
 import { Head, router } from '@inertiajs/react';
+import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import {
+    approveRequest,
+    declineRequest,
+    viewRequests,
+} from '@/actions/App/Http/Controllers/Administration/requests_controller';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,12 +17,6 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { dashboard } from '@/routes';
-import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
-import {
-    approveRequest,
-    declineRequest,
-    viewRequests,
-} from '@/actions/App/Http/Controllers/Administration/requests_controller';
 
 type RequestDetails = {
     id: number;

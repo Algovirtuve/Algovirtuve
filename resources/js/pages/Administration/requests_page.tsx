@@ -1,4 +1,6 @@
 import { Head, router } from '@inertiajs/react';
+import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import { viewRequest } from '@/actions/App/Http/Controllers/Administration/requests_controller';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,8 +12,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { dashboard } from '@/routes';
-import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
-import { viewRequest } from '@/actions/App/Http/Controllers/Administration/requests_controller';
 
 type RequestListItem = {
     id: number;
