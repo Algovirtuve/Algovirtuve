@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/card';
 import { dashboard } from '@/routes';
 
-
 export default function AdminPage({
     requests_count,
     rejected_requests_count,
