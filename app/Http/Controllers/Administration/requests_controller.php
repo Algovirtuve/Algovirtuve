@@ -91,13 +91,8 @@ class requests_controller extends Controller
         $request->update([
             'administrator_id' => $administrator?->getKey(),
             'date' => now()->toDateString(),
+            'status' => RecipeStatus::Declined,
         ]);
-
-        if ($request->recipe !== null) {
-            $request->recipe->update([
-                'status' => RecipeStatus::Declined,
-            ]);
-        }
 
         return redirect(route('admin.requests.show', $request, absolute: false))
             ->with('toast', [
@@ -120,13 +115,8 @@ class requests_controller extends Controller
         $request->update([
             'administrator_id' => $administrator?->getKey(),
             'date' => now()->toDateString(),
+            'status' => RecipeStatus::Accepted,
         ]);
-
-        if ($request->recipe !== null) {
-            $request->recipe->update([
-                'status' => RecipeStatus::Accepted,
-            ]);
-        }
 
         return redirect(route('admin.requests.show', $request, absolute: false))
             ->with('toast', [
