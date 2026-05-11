@@ -12,4 +12,5 @@ export type User = {
 
 export type Auth = {
     user: User;
+    is_administrator: boolean;
 };
