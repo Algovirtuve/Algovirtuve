@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Heart, LayoutGrid, Sparkles } from 'lucide-react';
+import { BookOpen, Heart, LayoutGrid, Sparkles, Wrench } from 'lucide-react';
 import { suggestions as onRecipeSuggestions } from '@/actions/App/Http/Controllers/Personalization/personalization_controller';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -16,6 +16,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as preferences } from '@/routes/preferences';
 import { index as onRecipeClick } from '@/routes/recipes';
+import { index as onToolPage } from '@/routes/tools';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -28,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Preferences',
         href: preferences(),
         icon: Heart,
+    },
+    {
+        title: 'Tools',
+        href: onToolPage(),
+        icon: Wrench,
     },
     {
         title: 'Recipes',
