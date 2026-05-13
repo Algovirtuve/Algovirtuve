@@ -1,11 +1,20 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
+import { render as renderShoppingPlanPage } from '@/actions/App/Http/Controllers/Shopping_managment/shopping_controller';
 import { Button } from '@/components/ui/button';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { dashboard } from '@/routes';
 
 export default function MainPage() {
     const { auth } = usePage().props;
+
+    const showProductsPlanPage = () => {
+        router.visit(renderShoppingPlanPage().url);
+    };
+
+    const onShoppingPlanGenerate = () => {
+        showProductsPlanPage();
+    };
 
     const onViewAdminPage = () => {
         router.visit(viewAdminPage().url);
@@ -20,6 +29,12 @@ export default function MainPage() {
                         <Button onClick={onViewAdminPage}>Admin</Button>
                     </div>
                 )}
+
+                <div className="flex items-center justify-end">
+                    <Button onClick={onShoppingPlanGenerate}>
+                        Generate shopping plan
+                    </Button>
+                </div>
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
