@@ -227,7 +227,11 @@ export function RecipeRequestDialog({
 
                         <div className="grid gap-2">
                             <Label htmlFor="request-status">Status</Label>
-                            <Input id="request-status" value="Waiting for review" disabled />
+                            <Input
+                                id="request-status"
+                                value="Waiting for review"
+                                disabled
+                            />
                         </div>
                     </div>
 

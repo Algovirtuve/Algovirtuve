@@ -22,14 +22,13 @@ import {
 } from '@/components/ui/select';
 import { index } from '@/routes/diet';
 import { generate } from '@/routes/diet';
-import temp from '@/routes/diet/temp';
 
 type EnumOption = { value: string; label: string };
 type MacroelementOption = { id: number; title: string; measurement: string };
 type SelectedMacroelement = { id: number; target_kcal: number };
 
 type TempState = {
-    macroelements: SelectedMacroelement[];
+    macroelements?: SelectedMacroelement[];
     diet_type?: string | null;
     day_calorie_limit?: number | null;
 };
@@ -39,19 +38,20 @@ type Step = 'macroelements' | 'diet_type' | 'calorie_limit' | 'review';
 export default function diet_plan_generation_page({
     macroelements,
     dietTypes,
-    temp,
+    tempState = {},
 }: {
     macroelements: MacroelementOption[];
     dietTypes: EnumOption[];
-    temp: TempState;
+    tempState?: TempState;
 }) {
     const [step, setStep] = useState<Step>('macroelements');
     const [clientError, setClientError] = useState<string | null>(null);
 
     const { data, setData, post, processing, errors, clearErrors } = useForm({
-        macroelements: (temp.macroelements ?? []) as SelectedMacroelement[],
-        diet_type: (temp.diet_type ?? '') as string,
-        day_calorie_limit: (temp.day_calorie_limit ?? '') as number | '',
+        macroelements: (tempState.macroelements ??
+            []) as SelectedMacroelement[],
+        diet_type: (tempState.diet_type ?? '') as string,
+        day_calorie_limit: (tempState.day_calorie_limit ?? '') as number | '',
     });
 
     const macroTitleById = useMemo(() => {
@@ -85,7 +85,10 @@ export default function diet_plan_generation_page({
         }
 
         if (targetStep === 'calorie_limit') {
-            if (!data.day_calorie_limit || Number(data.day_calorie_limit) <= 0) {
+            if (
+                !data.day_calorie_limit ||
+                Number(data.day_calorie_limit) <= 0
+            ) {
                 setClientError('Insert a valid daily calorie limit.');
                 return false;
             }
@@ -134,24 +137,21 @@ export default function diet_plan_generation_page({
             return;
         }
 
-        post(temp.macros.url(), {
-            preserveScroll: true,
-            onSuccess: () => {
-                onNextStepClick('diet_type');
-            },
-        });
+        onNextStepClick('diet_type');
     };
 
     const onDietTypeSelect = (value: string) => {
         setData('diet_type', value);
         clearErrors();
+    };
 
-        post(temp.type.url(), {
-            preserveScroll: true,
-            onSuccess: () => {
-                onNextStepClick('calorie_limit');
-            },
-        });
+    const onDietTypeSubmit = () => {
+        clearErrors();
+        if (!validate('diet_type')) {
+            return;
+        }
+
+        onNextStepClick('calorie_limit');
     };
 
     const onCalorieLimitInsert = () => {
@@ -161,19 +161,11 @@ export default function diet_plan_generation_page({
         }
 
         setData('day_calorie_limit', Number(data.day_calorie_limit));
-        post(temp.calorie.url(), {
-            preserveScroll: true,
-            onSuccess: () => {
-                onNextStepClick('review');
-            },
-        });
+        onNextStepClick('review');
     };
 
     const onSubmitDataClick = () => {
         clearErrors();
-        if (!validate('macroelements') || !validate('diet_type') || !validate('calorie_limit')) {
-            return;
-        }
 
         post(generate.url(), {
             preserveScroll: true,
@@ -218,9 +210,9 @@ export default function diet_plan_generation_page({
                         <div className="grid gap-3">
                             {macroelements.map((m) => {
                                 const checked = selectedIds.has(m.id);
-                                const selected = (data.macroelements ?? []).find(
-                                    (x) => x.id === m.id,
-                                );
+                                const selected = (
+                                    data.macroelements ?? []
+                                ).find((x) => x.id === m.id);
 
                                 return (
                                     <div
@@ -254,7 +246,10 @@ export default function diet_plan_generation_page({
                                                     id={`macro-kcal-${m.id}`}
                                                     type="number"
                                                     min={1}
-                                                    value={selected?.target_kcal ?? 1}
+                                                    value={
+                                                        selected?.target_kcal ??
+                                                        1
+                                                    }
                                                     onChange={(event) =>
                                                         setMacroTarget(
                                                             m.id,
@@ -329,8 +324,8 @@ export default function diet_plan_generation_page({
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() => onNextStepClick('calorie_limit')}
-                                disabled={!data.diet_type}
+                                onClick={onDietTypeSubmit}
+                                disabled={processing || !data.diet_type}
                             >
                                 Next step
                             </Button>

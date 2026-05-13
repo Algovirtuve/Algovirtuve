@@ -72,7 +72,8 @@ export default function diet_plan_page({
                                                 {item.recipe.title}
                                             </div>
                                             <div className="text-sm text-muted-foreground">
-                                                {item.recipe.calorie_intake} kcal
+                                                {item.recipe.calorie_intake}{' '}
+                                                kcal
                                             </div>
                                         </div>
                                         <Badge variant="secondary">
@@ -113,8 +114,8 @@ export default function diet_plan_page({
                     </div>
                     <div className="text-sm">
                         <span className="font-medium">Meal limits:</span>{' '}
-                        Breakfast {generatedPlan.meal_calorie_limits.breakfast}
-                        , Lunch {generatedPlan.meal_calorie_limits.lunch}, Dinner{' '}
+                        Breakfast {generatedPlan.meal_calorie_limits.breakfast},
+                        Lunch {generatedPlan.meal_calorie_limits.lunch}, Dinner{' '}
                         {generatedPlan.meal_calorie_limits.dinner}
                     </div>
                 </CardContent>
