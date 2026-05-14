@@ -203,7 +203,7 @@ export default function diet_plan_generation_page({
                     <CardHeader>
                         <CardTitle>Step 1 — Macroelements</CardTitle>
                         <CardDescription>
-                            Select macroelements and set target kcal for each.
+                            Select macroelements and set target grams for each.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -240,7 +240,7 @@ export default function diet_plan_generation_page({
                                                 <Label
                                                     htmlFor={`macro-kcal-${m.id}`}
                                                 >
-                                                    Target kcal
+                                                    Target grams
                                                 </Label>
                                                 <Input
                                                     id={`macro-kcal-${m.id}`}
@@ -413,7 +413,7 @@ export default function diet_plan_generation_page({
                                     {(data.macroelements ?? []).map((m) => (
                                         <li key={m.id}>
                                             {macroTitleById.get(m.id) ?? m.id} —{' '}
-                                            {m.target_kcal} kcal
+                                            {m.target_kcal} g
                                         </li>
                                     ))}
                                 </ul>

@@ -76,9 +76,6 @@ export default function diet_plan_page({
                                                 kcal
                                             </div>
                                         </div>
-                                        <Badge variant="secondary">
-                                            Score {item.score}
-                                        </Badge>
                                     </div>
                                 </div>
                             ))}

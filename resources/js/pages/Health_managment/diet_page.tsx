@@ -19,21 +19,25 @@ export default function diet_page() {
         <div className="space-y-6 p-4">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <Heading
-                    title="Diet plan"
-                    description="Generate a daily diet plan based on your chosen macroelements, diet type, and calorie limits."
+                    title="Diet"
+                    description="Generate a personalized diet plan, track macros and liquid intake."
                 />
-                <Button type="button" onClick={onGenerateDietPlanClick}>
-                    Generate diet plan
-                </Button>
             </div>
 
             <Card className="border-dashed">
-                <CardHeader>
-                    <CardTitle>Start generation</CardTitle>
-                    <CardDescription>
-                        Click “Generate diet plan” to begin selecting your
-                        macroelements, diet type, and daily calorie limit.
-                    </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Start generation</CardTitle>
+
+                        <CardDescription>
+                            Click “Generate diet plan” to begin selecting your
+                            macroelements, diet type, and daily calorie limit.
+                        </CardDescription>
+                    </div>
+
+                    <Button type="button" onClick={onGenerateDietPlanClick}>
+                        Generate diet plan
+                    </Button>
                 </CardHeader>
             </Card>
         </div>
