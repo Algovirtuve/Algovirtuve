@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RecipeSeeder::class);
         $this->call(MacroelementSeeder::class);
+        $this->call(RequestSeeder::class);
     }
 }
