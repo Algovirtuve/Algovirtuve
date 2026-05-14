@@ -41,7 +41,7 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-export function AppSidebar() {
+export function NavigationBar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
