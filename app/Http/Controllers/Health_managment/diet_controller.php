@@ -329,4 +329,73 @@ class diet_controller extends Controller
             ->all();
     }
 
+    public function dietPlanPage(): Response
+    {
+        $dietPlan = DietPlan::query()->with('macroelements')->latest('id')->first();
+
+        if (! $dietPlan) {
+            // fallback generic plan
+            return Inertia::render('Health_managment/diet_plan_page', [
+                'generatedPlan' => [
+                    'id' => 0,
+                    'diet_type' => 'None',
+                    'day_calorie_limit' => 0,
+                    'meal_calorie_limits' => ['breakfast' => 0, 'lunch' => 0, 'dinner' => 0],
+                    'selected_macroelements' => [],
+                ],
+                'recommendations' => ['breakfast' => [], 'lunch' => [], 'dinner' => []],
+            ]);
+        }
+
+        $macroelements = $dietPlan->macroelements->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'target_kcal' => $m->pivot->quantity,
+            ];
+        })->toArray();
+
+        $dayCalorieLimit = collect($macroelements)->sum('target_kcal') ?: 2000;
+
+        $recipesByDietType = Recipe::query()
+            ->with(['ingredients.macroelements', 'tools'])
+            ->where('diet_type', $dietPlan->diet_type)
+            ->get();
+
+        if ($recipesByDietType->isEmpty()) {
+            $recipesByDietType = Recipe::query()
+                ->with(['ingredients.macroelements', 'tools'])
+                ->get();
+        }
+
+        $mealCalorieLimits = $this->calculateCalorieLimits($dayCalorieLimit);
+
+        $breakfastCandidates = $this->filterRecipesByMeal($recipesByDietType, Meal::Breakfast, $mealCalorieLimits['breakfast']);
+        $lunchCandidates = $this->filterRecipesByMeal($recipesByDietType, Meal::Lunch, $mealCalorieLimits['lunch']);
+        $dinnerCandidates = $this->filterRecipesByMeal($recipesByDietType, Meal::Dinner, $mealCalorieLimits['dinner']);
+
+        $macrosDescending = $this->sortMacrosDescending($macroelements);
+
+        foreach ($macrosDescending as $macro) {
+            $breakfastCandidates = $this->filterBreakfastByMacro($breakfastCandidates, (int) $macro['id'], (int) $macro['target_kcal']);
+            $lunchCandidates = $this->filterLunchByMacro($lunchCandidates, (int) $macro['id'], (int) $macro['target_kcal']);
+            $dinnerCandidates = $this->filterDinnerByMacro($dinnerCandidates, (int) $macro['id'], (int) $macro['target_kcal']);
+        }
+
+        $recommendations = [
+            Meal::Breakfast->value => $this->pickTopRecipes($breakfastCandidates),
+            Meal::Lunch->value => $this->pickTopRecipes($lunchCandidates),
+            Meal::Dinner->value => $this->pickTopRecipes($dinnerCandidates),
+        ];
+
+        return Inertia::render('Health_managment/diet_plan_page', [
+            'generatedPlan' => [
+                'id' => $dietPlan->id,
+                'diet_type' => $dietPlan->diet_type,
+                'day_calorie_limit' => $dayCalorieLimit,
+                'meal_calorie_limits' => $mealCalorieLimits,
+                'selected_macroelements' => $this->formatSelectedMacroelements($macroelements),
+            ],
+            'recommendations' => $recommendations,
+        ]);
+    }
 }

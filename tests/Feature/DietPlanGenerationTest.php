@@ -160,3 +160,18 @@ test('diet plan generation splits calories 20/50/30 and returns top 3 recipes pe
     // Up to 9 recipes attached (3 meals x 3 recipes)
     expect($dietPlan->recipes()->count())->toBeGreaterThan(0);
 });
+
+test('authenticated users can view the last generated diet plan', function () {
+    /** @var User $user */
+    $user = User::factory()->createOne();
+
+    $dietPlan = DietPlan::query()->create(['diet_type' => DietType::Vegetarian->value]);
+
+    $response = $this->actingAs($user)->get(route('diet.plan'));
+
+    $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('Health_managment/diet_plan_page')
+        ->has('generatedPlan.id')
+    );
+});

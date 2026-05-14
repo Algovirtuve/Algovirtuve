@@ -9,10 +9,15 @@ import {
 import { router } from '@inertiajs/react';
 import { index } from '@/routes/diet';
 import { view } from '@/routes/diet/generate';
+import { plan } from '@/routes/diet';
 
 export default function diet_page() {
     const onGenerateDietPlanClick = () => {
         router.get(view.url());
+    };
+
+    const onDietPlanButtonClick = () => {
+        router.get(plan.url());
     };
 
     return (
@@ -37,6 +42,23 @@ export default function diet_page() {
 
                     <Button type="button" onClick={onGenerateDietPlanClick}>
                         Generate diet plan
+                    </Button>
+                </CardHeader>
+            </Card>
+
+            <Card className="border-dashed">
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>View last generated diet plan</CardTitle>
+
+                        <CardDescription>
+                            Click to view the last generated diet plan if one
+                            exists.
+                        </CardDescription>
+                    </div>
+
+                    <Button type="button" onClick={onDietPlanButtonClick}>
+                        View diet plan
                     </Button>
                 </CardHeader>
             </Card>
