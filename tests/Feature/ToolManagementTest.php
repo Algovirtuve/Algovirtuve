@@ -14,7 +14,7 @@ test('authenticated users can view the tool management page', function () {
 
     $response->assertOk();
     $response->assertInertia(
-        fn(Assert $page) => $page
+        fn (Assert $page) => $page
             ->component('Recipe_generation/tool_page')
             ->where('tools.0.type_label', 'Baking')
     );
@@ -27,7 +27,7 @@ test('authenticated users can view the tool creation page', function () {
 
     $response->assertOk();
     $response->assertInertia(
-        fn(Assert $page) => $page
+        fn (Assert $page) => $page
             ->component('Recipe_generation/tool_creation_page')
             ->has('tool_types')
     );

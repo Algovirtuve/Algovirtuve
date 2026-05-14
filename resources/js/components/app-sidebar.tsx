@@ -1,5 +1,12 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Heart, LayoutGrid, Sparkles, Wrench } from 'lucide-react';
+import {
+    BookOpen,
+    Heart,
+    LayoutGrid,
+    Leaf,
+    Sparkles,
+    Wrench,
+} from 'lucide-react';
 import { suggestions as onRecipeSuggestions } from '@/actions/App/Http/Controllers/Personalization/personalization_controller';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -14,6 +21,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as onIngredientPage } from '@/routes/ingredients';
 import { index as preferences } from '@/routes/preferences';
 import { index as onRecipeClick } from '@/routes/recipes';
 import { index as onToolPage } from '@/routes/tools';
@@ -34,6 +42,11 @@ const mainNavItems: NavItem[] = [
         title: 'Tools',
         href: onToolPage(),
         icon: Wrench,
+    },
+    {
+        title: 'Ingredients',
+        href: onIngredientPage(),
+        icon: Leaf,
     },
     {
         title: 'Recipes',
