@@ -24,7 +24,7 @@ export default function ToolCreationPage({
 }: {
     tool_types: ToolTypeOption[];
 }) {
-    const { errors } = usePage().props as { errors?: Record<string, string[]> };
+    const { errors } = usePage<{ errors?: Record<string, string[]> }>().props;
 
     return (
         <>
