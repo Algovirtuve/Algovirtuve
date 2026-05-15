@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shopping_managment;
+namespace App\Http\Controllers\Shopping_management;
 
 use App\Enums\Measurement;
 use App\Http\Controllers\Controller;

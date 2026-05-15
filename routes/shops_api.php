@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Shopping_managment\shops_api_controller;
+use App\Http\Controllers\Shopping_management\shops_api_controller;
 use Illuminate\Support\Facades\Route;
 
 // Fake Shops API inside the app (used by products_service).

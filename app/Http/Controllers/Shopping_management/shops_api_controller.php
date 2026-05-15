@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shopping_managment;
+namespace App\Http\Controllers\Shopping_management;
 
 use App\Http\Controllers\Controller;
 use App\Services\shops_api;

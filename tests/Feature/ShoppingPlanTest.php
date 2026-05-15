@@ -90,7 +90,7 @@ test('users can generate a shopping plan and edit it by adding and removing prod
         ->toBeGreaterThan(0);
 
     // Search step for adding a product (returns shops list)
-    $response = $this->actingAs($user)->post(route('shopping_plan.insertNewProduct', $shoppingPlan), [
+    $response = $this->actingAs($user)->post(route('shopping_plan.searchForProducts', $shoppingPlan), [
         'product_title' => 'Milk',
     ]);
 
@@ -110,6 +110,10 @@ test('users can generate a shopping plan and edit it by adding and removing prod
         'price' => 1.23,
         'quantity' => 1,
         'measurement' => Measurement::UNIT->value,
+        'generated_plan' => [
+            'generation_date' => now()->toDateString(),
+            'cheapest_products' => [],
+        ],
     ]);
 
     $response->assertOk();

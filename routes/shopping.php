@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Shopping_managment\shopping_controller;
+use App\Http\Controllers\Shopping_management\shopping_controller;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {

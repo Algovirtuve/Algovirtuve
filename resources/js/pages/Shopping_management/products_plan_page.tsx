@@ -6,7 +6,7 @@ import {
     insertNewProduct,
     removeProduct,
     searchForProducts,
-} from '@/actions/App/Http/Controllers/Shopping_managment/shopping_controller';
+} from '@/actions/App/Http/Controllers/Shopping_management/shopping_controller';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
