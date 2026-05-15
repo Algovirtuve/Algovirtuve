@@ -63,12 +63,12 @@ class shopping_controller extends Controller
     {
         $userIngredients = $request->user()->ingredients()->with('product')->get();
 
-        $recipes = Recipe::query()
+        $recipesWithIngredients = Recipe::query()
             ->whereKey($request->recipeIds())
             ->with(['ingredients.product'])
             ->get();
 
-        $missingIngredients = $this->checkMissingIngredients($userIngredients, $recipes);
+        $missingIngredients = $this->checkMissingIngredients($userIngredients, $recipesWithIngredients);
 
         if ($missingIngredients === []) {
             return Inertia::render('products_plan_page', [
@@ -151,21 +151,19 @@ class shopping_controller extends Controller
 
         $storeProducts = $shoppingPlan->storeProducts()->get();
 
-        if ($storeProducts->isEmpty()) {
-            ShoppingCart::query()->where('shopping_plan_id', $shoppingPlan->id)->delete();
-
-            return Inertia::render('products_plan_page', [
-                'recipes' => [],
-                'recipe_query' => '',
-                'generated_plan' => [
-                    'id' => (int) $shoppingPlan->id,
-                    'generation_date' => (string) $shoppingPlan->generation_date->toDateString(),
-                    'cheapest_products' => [],
-                    'stores' => [],
-                ],
-                'add_product' => null,
-            ]);
-        }
+        // if ($storeProducts->isEmpty()) {
+        //     return Inertia::render('products_plan_page', [
+        //         'recipes' => [],
+        //         'recipe_query' => '',
+        //         'generated_plan' => [
+        //             'id' => (int) $shoppingPlan->id,
+        //             'generation_date' => (string) $shoppingPlan->generation_date->toDateString(),
+        //             'cheapest_products' => [],
+        //             'stores' => [],
+        //         ],
+        //         'add_product' => null,
+        //     ]);
+        // }
 
         $pricesByProductId = [];
         $cheapestByProductId = [];
@@ -347,270 +345,6 @@ class shopping_controller extends Controller
         ]);
     }
 
-    // public function insertNewProduct(InsertNewProductRequest $request, ShoppingPlan $shoppingPlan, products_service $productsService): Response
-    // {
-    //     $user = $request->user();
-
-    //     $generatedPlan = $request->input('generated_plan');
-
-    //     if ((int) $shoppingPlan->user_id !== (int) $user->id) {
-    //         abort(403);
-    //     }
-
-    //     $store = $this->checkShop($request->selectedShop()['title']);
-
-    //     $title = $request->productTitle();
-    //     $selectedProduct = $request->selectedProduct();
-
-    //     // TODO UPDATE DIAGRAM
-    //     $product = insert(Product::class, [
-    //         'title' => $title,
-    //         'measurement' => $selectedProduct['measurement'],
-    //         'quantity' => (int) $selectedProduct['quantity'],
-    //     ]);
-
-    //     insert(StoreProduct::class, [
-    //         'store_id' => $store->id,
-    //         'shopping_plan_id' => $shoppingPlan->id,
-    //         'product_id' => $product->id,
-    //         'price' => (float) $selectedProduct['price'],
-    //         'quantity' => (int) $selectedProduct['quantity'],
-    //     ]);
-
-    //     $shoppingPlan->update([
-    //         'generation_date' => now()->toDateString(),
-    //     ]);
-
-    //     $shoppingCarts = $shoppingPlan
-    //         ->shoppingCarts()
-    //         ->with('store')
-    //         ->get();
-
-    //     foreach ($shoppingCarts as $shoppingCart) {
-    //         if ((int) $shoppingCart->store_id === (int) $store->id) {
-    //             $shoppingCart->update([
-    //                 'price' => (float) $shoppingCart->price +
-    //                     ((float) $selectedProduct['price'] * (int) $selectedProduct['quantity']),
-    //             ]);
-
-    //             continue;
-    //         }
-
-    //         $shoppingCart->delete();
-    //     }
-
-    //     // $shoppingCarts = $shoppingPlan->shoppingCarts()->with('store')->get();
-
-    //     // foreach ($shoppingCarts as $shoppingCart) {
-    //     //     if ($shoppingCart->store->title === $request->selectedShop()['title'])
-    //     //     {
-    //     //         $shoppingCart->update([
-    //     //             'price' => $shoppingCart->price + (float) $selectedProduct['price'] * (int) $selectedProduct['quantity'],
-    //     //         ]);
-    //     //     }
-    //     //     else {
-    //     //         ShoppingCart::delete($shoppingCart->id);
-    //     //     }
-    //     // }
-        
-
-    //     // if ($storeProducts->isEmpty()) {
-    //     //     ShoppingCart::query()->where('shopping_plan_id', $shoppingPlan->id)->delete();
-
-    //     //     return Inertia::render('products_plan_page', [
-    //     //         'recipes' => [],
-    //     //         'recipe_query' => '',
-    //     //         'generated_plan' => [
-    //     //             'id' => (int) $shoppingPlan->id,
-    //     //             'generation_date' => (string) $shoppingPlan->generation_date->toDateString(),
-    //     //             'cheapest_products' => [],
-    //     //             'stores' => [],
-    //     //         ],
-    //     //         'add_product' => null,
-    //     //         'flash' => [
-    //     //             'toast' => [
-    //     //                 'type' => 'success',
-    //     //                 'message' => 'Product added successfully.',
-    //     //             ],
-    //     //         ],
-    //     //     ]);
-    //     // }
-
-    //     // $productsRequest = $storeProducts
-    //     //     ->map(static fn (StoreProduct $storeProduct): array => [
-    //     //         'title' => (string) ($storeProduct->product?->title ?? 'Product'),
-    //     //         'quantity' => (int) $storeProduct->quantity,
-    //     //         'measurement' => (string) ($storeProduct->product?->measurement?->value ?? Measurement::UNIT->value),
-    //     //     ])
-    //     //     ->values()
-    //     //     ->all();
-
-    //     // $productsFromApi = $productsService->getProducts($productsRequest);
-
-    //     // $storesFromApi = collect($productsFromApi)
-    //     //     ->flatMap(static fn (array $product): array => is_array($product['stores'] ?? null) ? $product['stores'] : [])
-    //     //     ->values()
-    //     //     ->all();
-
-    //     // $storeByTitle = $this->checkShops($storesFromApi);
-
-    //     // $pricesByProductId = [];
-    //     // $cheapestByProductId = [];
-    //     // $fullBasketStoreTitles = null;
-
-    //     // foreach ($storeProducts as $index => $storeProduct) {
-    //     //     $apiProduct = $productsFromApi[$index] ?? null;
-
-    //     //     $stores = is_array($apiProduct)
-    //     //         ? Arr::where($apiProduct['stores'] ?? [], static fn (mixed $store): bool => is_array($store) && isset($store['title'], $store['price']))
-    //     //         : [];
-
-    //     //     $titles = collect($stores)
-    //     //         ->map(static fn (array $storeRow): string => (string) ($storeRow['title'] ?? ''))
-    //     //         ->filter(static fn (string $title): bool => $title !== '')
-    //     //         ->unique()
-    //     //         ->values()
-    //     //         ->all();
-
-    //     //     $fullBasketStoreTitles = $fullBasketStoreTitles === null
-    //     //         ? $titles
-    //     //         : array_values(array_intersect($fullBasketStoreTitles, $titles));
-
-    //     //     $pricesByProductId[(int) $storeProduct->product_id] = collect($stores)
-    //     //         ->mapWithKeys(static fn (array $storeRow): array => [
-    //     //             (string) $storeRow['title'] => (float) $storeRow['price'],
-    //     //         ])
-    //     //         ->all();
-
-    //     //     $selectedStore = collect($stores)->sortBy('price')->first();
-    //     //     $cheapestByProductId[(int) $storeProduct->product_id] = [
-    //     //         'store_title' => (string) ($selectedStore['title'] ?? ''),
-    //     //         'price' => (float) ($selectedStore['price'] ?? 0),
-    //     //     ];
-    //     // }
-
-    //     // $fullBasketStoreTitles = array_values($fullBasketStoreTitles ?? []);
-    //     // $desiredStoreIds = collect($fullBasketStoreTitles)
-    //     //     ->map(function (string $storeTitle) use ($storeByTitle): ?int {
-    //     //         $store = $storeByTitle[(string) $storeTitle] ?? null;
-
-    //     //         return $store instanceof Store ? (int) $store->id : null;
-    //     //     })
-    //     //     ->filter(static fn (?int $id): bool => $id !== null)
-    //     //     ->values()
-    //     //     ->all();
-
-    //     // if ($desiredStoreIds === []) {
-    //     //     ShoppingCart::query()->where('shopping_plan_id', $shoppingPlan->id)->delete();
-    //     // } else {
-    //     //     ShoppingCart::query()
-    //     //         ->where('shopping_plan_id', $shoppingPlan->id)
-    //     //         ->whereNotIn('store_id', $desiredStoreIds)
-    //     //         ->delete();
-
-    //     //     foreach ($fullBasketStoreTitles as $storeTitle) {
-    //     //         $storeTitle = (string) $storeTitle;
-    //     //         $store = $storeByTitle[$storeTitle] ?? null;
-
-    //     //         if (! $store instanceof Store) {
-    //     //             continue;
-    //     //         }
-
-    //     //         $total = (float) $storeProducts->sum(function (StoreProduct $storeProduct) use ($pricesByProductId, $storeTitle): float {
-    //     //             $productId = (int) $storeProduct->product_id;
-    //     //             $unitPrice = (float) ($pricesByProductId[$productId][$storeTitle] ?? 0);
-
-    //     //             return $unitPrice * (int) $storeProduct->quantity;
-    //     //         });
-
-    //     //         ShoppingCart::query()->updateOrCreate([
-    //     //             'shopping_plan_id' => $shoppingPlan->id,
-    //     //             'store_id' => $store->id,
-    //     //         ], [
-    //     //             'price' => $total,
-    //     //         ]);
-    //     //     }
-    //     // }
-
-    //     // $shoppingPlan = ShoppingPlan::query()
-    //     //     ->whereKey($shoppingPlan->id)
-    //     //     ->with(['shoppingCarts.store', 'storeProducts.product'])
-    //     //     ->firstOrFail();
-
-    //     // $storeProducts = $shoppingPlan->storeProducts->values();
-
-    //     // $cheapestProducts = $storeProducts
-    //     //     ->map(function (StoreProduct $storeProduct) use ($cheapestByProductId, $storeByTitle): array {
-    //     //         $productId = (int) $storeProduct->product_id;
-    //     //         $cheapest = $cheapestByProductId[$productId] ?? ['store_title' => '', 'price' => 0];
-
-    //     //         $storeTitle = (string) ($cheapest['store_title'] ?? '');
-    //     //         $store = $storeByTitle[$storeTitle] ?? null;
-
-    //     //         return [
-    //     //             'store_product_id' => (int) $storeProduct->id,
-    //     //             'product_id' => $productId,
-    //     //             'title' => (string) ($storeProduct->product?->title ?? 'Product'),
-    //     //             'quantity' => (int) $storeProduct->quantity,
-    //     //             'measurement' => (string) ($storeProduct->product?->measurement?->value ?? Measurement::UNIT->value),
-    //     //             'price' => (float) ($cheapest['price'] ?? 0),
-    //     //             'store_title' => $store instanceof Store ? (string) $store->title : $storeTitle,
-    //     //             'store_city' => $store instanceof Store ? (string) $store->city : '',
-    //     //         ];
-    //     //     })
-    //     //     ->values()
-    //     //     ->all();
-
-    //     // $stores = $shoppingPlan->shoppingCarts
-    //     //     ->sortBy('price')
-    //     //     ->map(function (ShoppingCart $cart) use ($storeProducts, $pricesByProductId): array {
-    //     //         /** @var Store $store */
-    //     //         $store = $cart->store;
-    //     //         $storeTitle = (string) $store->title;
-
-    //     //         $products = $storeProducts
-    //     //             ->map(function (StoreProduct $storeProduct) use ($pricesByProductId, $storeTitle): array {
-    //     //                 $productId = (int) $storeProduct->product_id;
-    //     //                 $unitPrice = (float) ($pricesByProductId[$productId][$storeTitle] ?? 0);
-
-    //     //                 return [
-    //     //                     'store_product_id' => (int) $storeProduct->id,
-    //     //                     'product_id' => $productId,
-    //     //                     'title' => (string) ($storeProduct->product?->title ?? 'Product'),
-    //     //                     'quantity' => (int) $storeProduct->quantity,
-    //     //                     'measurement' => (string) ($storeProduct->product?->measurement?->value ?? Measurement::UNIT->value),
-    //     //                     'price' => $unitPrice,
-    //     //                 ];
-    //     //             })
-    //     //             ->values()
-    //     //             ->all();
-
-    //     //         return [
-    //     //             'id' => (int) $store->id,
-    //     //             'title' => (string) $store->title,
-    //     //             'address' => (string) $store->address,
-    //     //             'city' => (string) $store->city,
-    //     //             'cart_price' => (float) $cart->price,
-    //     //             'products' => $products,
-    //     //         ];
-    //     //     })
-    //     //     ->values()
-    //     //     ->all();
-
-    //     return Inertia::render('products_plan_page', [
-    //         'recipes' => [],
-    //         'recipe_query' => '',
-    //         'generated_plan' => $generatedPlan ?? null,
-    //         'add_product' => null,
-    //         'flash' => [
-    //             'toast' => [
-    //                 'type' => 'success',
-    //                 'message' => 'Product added successfully.',
-    //             ],
-    //         ],
-    //     ]);
-    // }
-
     public function insertNewProduct(InsertNewProductRequest $request, ShoppingPlan $shoppingPlan): Response {
         $user = $request->user();
 
@@ -662,8 +396,10 @@ class shopping_controller extends Controller
         ];
 
         $generatedPlan['stores'] = collect($generatedPlan['stores'] ?? [])
-            ->filter(static fn (array $shop): bool => (int) $shop['id'] === (int) $store->id)
             ->map(function (array $shop) use ($storeProduct, $product, $selectedProduct): array {
+                if ($shop['id'] !== (int) $storeProduct->store_id) {
+                    return $shop;
+                }
 
                 $shop['cart_price'] = (float) $shop['cart_price'] +
                     ((float) $selectedProduct['price'] * (int) $selectedProduct['quantity']);
@@ -682,14 +418,26 @@ class shopping_controller extends Controller
             ->values()
             ->all();
 
-        if ($generatedPlan['stores'] === []) {
+        $products = collect($generatedPlan['cheapest_products'])
+            ->pluck('title')
+            ->unique()
+            ->values()
+            ->all();
+
+        $generatedPlan['stores'] = collect($generatedPlan['stores'])
+            ->filter(function (array $store) use ($products): bool {
+                return collect($store['products'] ?? [])->pluck('title')->intersect($products)->count() === count($products);
+            })
+            ->values()
+            ->all();
+
+        if (empty($generatedPlan['stores']) && count($generatedPlan['cheapest_products']) === 1) {
             $generatedPlan['stores'][] = [
                 'id' => (int) $store->id,
                 'title' => (string) $store->title,
                 'address' => (string) $store->address,
                 'city' => (string) $store->city,
-                'cart_price' => (float) $selectedProduct['price'] *
-                    (int) $selectedProduct['quantity'],
+                'cart_price' => (float) $selectedProduct['price'] * (int) $selectedProduct['quantity'],
                 'products' => [[
                     'store_product_id' => (int) $storeProduct->id,
                     'product_id' => (int) $product->id,
@@ -715,67 +463,66 @@ class shopping_controller extends Controller
         ]);
     }
 
-    public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shoppingPlan, StoreProduct $storeProduct): Response
+public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shoppingPlan, int $productId): Response
     {
         $user = $request->user();
-
         if ((int) $shoppingPlan->user_id !== (int) $user->id) {
             abort(403);
         }
 
-        if ((int) $storeProduct->shopping_plan_id !== (int) $shoppingPlan->id) {
-            abort(404);
+        $storeProducts = $shoppingPlan->storeProducts()->where('product_id', $productId)->get();
+
+        foreach ($storeProducts as $storeProduct) {
+            $delta = $storeProduct->price * $storeProduct->quantity;
+            
+            $storeProduct->delete();
+
+            ShoppingCart::query()
+                ->where('shopping_plan_id', $shoppingPlan->id)
+                ->where('store_id', $storeProduct->store_id)
+                ->update(['price' => DB::raw('price - ' . $delta)]);
         }
 
-        $storeId      = (int)   $storeProduct->store_id;
-        $productTitle = $storeProduct->product?->title;
-
-        StoreProduct::with('product')
-            ->where('shopping_plan_id', $shoppingPlan->id)
-            ->where('product.title', $productTitle)
-            ->delete();
+        if ($shoppingPlan->storeProducts()->count() === 0) {
+            ShoppingCart::query()
+                ->where('shopping_plan_id', $shoppingPlan->id)
+                ->delete();
+        } else {
+            $activeStoreIds = $shoppingPlan->storeProducts()->pluck('store_id')->unique();
+            ShoppingCart::query()
+                ->where('shopping_plan_id', $shoppingPlan->id)
+                ->whereNotIn('store_id', $activeStoreIds)
+                ->delete();
+        }
 
         $generatedPlan = $request->input('generated_plan');
 
         if (is_array($generatedPlan)) {
             $generatedPlan['cheapest_products'] = collect($generatedPlan['cheapest_products'] ?? [])
-                ->reject(fn ($item) =>
-                    (string) ($item['title'] ?? '') === (string) $productTitle
-                )
+                ->reject(fn ($item) => (int) ($item['product_id'] ?? 0) === $productId)
                 ->values()
                 ->all();
 
             $generatedPlan['stores'] = collect($generatedPlan['stores'] ?? [])
-                ->map(function (array $store) use ($productTitle) {
+                ->map(function (array $store) use ($productId) {
+                    
+                    $productsToRemove = collect($store['products'] ?? [])
+                        ->filter(fn ($p) => (int) ($p['product_id'] ?? 0) === $productId);
+
+                    $delta = $productsToRemove->sum(fn ($p) => $p['price'] * $p['quantity']);
+
                     $store['products'] = collect($store['products'] ?? [])
-                        ->reject(fn ($p) => (string) ($p['title'] ?? '') === (string) $productTitle)
+                        ->reject(fn ($p) => (int) ($p['product_id'] ?? 0) === $productId)
                         ->values()
                         ->all();
 
-                    $newPrice = collect($store['products'] ?? [])
-                        ->sum(static fn (array $p) => (float) ($p['price'] ?? 0) * (int) ($p['quantity'] ?? 1));
-
-                    $store['cart_price'] = $newPrice;
+                    $store['cart_price'] = max(0, (float) ($store['cart_price'] ?? 0) - $delta);
 
                     return $store;
                 })
                 ->reject(fn (array $store) => empty($store['products']))
                 ->values()
                 ->all();
-        }
-
-        ShoppingCart::query()
-            ->where('shopping_plan_id', $shoppingPlan->id)
-            ->where('store_id', $storeId)
-            ->update(['price' => DB::raw('price - ' .
-                collect($generatedPlan['stores'] ?? [])
-                    ->firstWhere('id', $storeId)['cart_price'] ?? 0
-            )]);
-
-        if ($shoppingPlan->storeProducts()->count() === 0) {
-            ShoppingCart::query()
-                ->where('shopping_plan_id', $shoppingPlan->id)
-                ->delete();
         }
 
         return Inertia::render('products_plan_page', [

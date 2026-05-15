@@ -87,7 +87,7 @@ export default function ProductsPlanPage({
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
     const [productBeingRemoved, setProductBeingRemoved] = useState<null | {
         shoppingPlanId: number;
-        storeProductId: number;
+        productId: number;
         title: string;
     }>(null);
     const [productTitle, setProductTitle] = useState('');
@@ -208,14 +208,14 @@ export default function ProductsPlanPage({
         );
     };
 
-    const onRemoveProduct = (storeProductId: number, title: string) => {
+    const onRemoveProduct = (productId: number, title: string) => {
         if (!generated_plan) {
             return;
         }
 
         setProductBeingRemoved({
             shoppingPlanId: generated_plan.id,
-            storeProductId,
+            productId,
             title,
         });
     };
@@ -226,18 +226,15 @@ export default function ProductsPlanPage({
         }
 
         router.patch(
-            removeProduct(
-                {
-                    shoppingPlan: productBeingRemoved.shoppingPlanId,
-                    storeProduct: productBeingRemoved.storeProductId,
-                },
-            ).url,
+            removeProduct({
+                shoppingPlan: productBeingRemoved.shoppingPlanId,
+                productId: productBeingRemoved.productId,
+            }).url,
             {
                 generated_plan: generated_plan,
             },
             {
                 preserveScroll: true,
-                preserveState: true,
                 onSuccess: () => {
                     setProductBeingRemoved(null);
                 },
@@ -356,9 +353,9 @@ export default function ProductsPlanPage({
                         </CardHeader>
 
                         <CardContent className="space-y-6">
-                            {generated_plan.stores.length === 0 ? (
+                            {generated_plan.cheapest_products.length === 0 ? (
                                 <div className="text-sm text-muted-foreground">
-                                    No stores/products in this plan.
+                                    No products in this plan.
                                 </div>
                             ) : (
                                 <>
@@ -391,9 +388,24 @@ export default function ProductsPlanPage({
                                                             </div>
                                                         </div>
 
-                                                        <div className="text-right text-xs text-muted-foreground">
-                                                            {product.store_title}
-                                                            <div>{product.store_city}</div>
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="text-right text-xs text-muted-foreground">
+                                                                {product.store_title}
+                                                                <div>{product.store_city}</div>
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                variant="destructive"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    onRemoveProduct(
+                                                                        product.product_id,
+                                                                        product.title
+                                                                    )
+                                                                }
+                                                            >
+                                                                Remove
+                                                            </Button>
                                                         </div>
                                                     </div>
                                                 ))
@@ -430,19 +442,6 @@ export default function ProductsPlanPage({
                                                                     {product.quantity} {product.measurement} · {product.price.toFixed(2)}
                                                                 </div>
                                                             </div>
-
-                                                            <Button
-                                                                type="button"
-                                                                variant="destructive"
-                                                                onClick={() =>
-                                                                    onRemoveProduct(
-                                                                        product.store_product_id,
-                                                                        product.title,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Remove
-                                                            </Button>
                                                         </div>
                                                     ))
                                                 )}
@@ -538,7 +537,7 @@ export default function ProductsPlanPage({
                         <DialogTitle>Remove product</DialogTitle>
                         <DialogDescription>
                             {productBeingRemoved
-                                ? `Remove "${productBeingRemoved.title}" from the plan?`
+                                ? `Remove "${productBeingRemoved.title}" from the entire plan?`
                                 : 'Remove this product?'}
                         </DialogDescription>
                     </DialogHeader>

@@ -17,6 +17,6 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('shopping-plan/{shoppingPlan}/products', [shopping_controller::class, 'insertNewProduct'])
         ->name('shopping_plan.insertNewProduct');
 
-    Route::patch('shopping-plan/{shoppingPlan}/store-products/{storeProduct}', [shopping_controller::class, 'removeProduct'])
+    Route::patch('shopping-plan/{shoppingPlan}/store-products/{productId}', [shopping_controller::class, 'removeProduct'])
         ->name('shopping_plan.removeProduct');
 });
