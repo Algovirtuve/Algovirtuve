@@ -20,8 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { index } from '@/routes/diet';
-import { generate } from '@/routes/diet';
+import { index, generate } from '@/routes/diet';
 
 type EnumOption = { value: string; label: string };
 type MacroelementOption = { id: number; title: string; measurement: string };
@@ -47,12 +46,15 @@ export default function diet_plan_generation_page({
     const [step, setStep] = useState<Step>('macroelements');
     const [clientError, setClientError] = useState<string | null>(null);
 
-    const { data, setData, post, processing, errors, clearErrors } = useForm({
-        macroelements: (tempState.macroelements ??
-            []) as SelectedMacroelement[],
-        diet_type: (tempState.diet_type ?? '') as string,
-        day_calorie_limit: (tempState.day_calorie_limit ?? '') as number | '',
-    });
+    const { data, setData, post, processing, errors, clearErrors, transform } =
+        useForm({
+            macroelements: (tempState.macroelements ??
+                []) as SelectedMacroelement[],
+            diet_type: (tempState.diet_type ?? '') as string,
+            day_calorie_limit: (tempState.day_calorie_limit ?? '') as
+                | number
+                | '',
+        });
 
     const macroTitleById = useMemo(() => {
         return new Map(macroelements.map((m) => [m.id, m.title] as const));
@@ -127,6 +129,18 @@ export default function diet_plan_generation_page({
         );
     };
 
+    const insertToTempMacros = () => ({
+        macroelements: data.macroelements,
+    });
+
+    const insertToTempType = () => ({
+        diet_type: data.diet_type,
+    });
+
+    const insertToTempCalorie = () => ({
+        day_calorie_limit: data.day_calorie_limit,
+    });
+
     const onNextStepClick = (nextStep: Step) => {
         setStep(nextStep);
     };
@@ -167,8 +181,17 @@ export default function diet_plan_generation_page({
     const onSubmitDataClick = () => {
         clearErrors();
 
+        const payload = {
+            ...insertToTempMacros(),
+            ...insertToTempType(),
+            ...insertToTempCalorie(),
+        };
+
+        transform(() => payload);
+
         post(generate.url(), {
             preserveScroll: true,
+            onFinish: () => transform((current) => current),
         });
     };
 

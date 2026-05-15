@@ -69,7 +69,7 @@ export default function diet_page() {
 diet_page.layout = {
     breadcrumbs: [
         {
-            title: 'Diet plan',
+            title: 'Diet',
             href: index(),
         },
     ],
