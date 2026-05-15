@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
@@ -6,10 +7,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { router } from '@inertiajs/react';
 import { index } from '@/routes/diet';
-import { view } from '@/routes/diet/generate';
 import { plan } from '@/routes/diet';
+import { view } from '@/routes/diet/generate';
 
 export default function diet_page() {
     const onGenerateDietPlanClick = () => {

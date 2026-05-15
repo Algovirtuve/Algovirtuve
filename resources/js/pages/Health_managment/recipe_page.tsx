@@ -5,13 +5,13 @@ import { RecipeDeleteDialog } from '@/components/recipes/recipe-delete-dialog';
 import { RecipeEditDialog } from '@/components/recipes/recipe-edit-dialog';
 import { RecipeRequestDialog } from '@/components/recipes/recipe-request-dialog';
 import type { EnumOption, RecipeListItem } from '@/components/recipes/types';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardDescription,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { index } from '@/routes/recipes';
 
 export default function RecipesIndex({

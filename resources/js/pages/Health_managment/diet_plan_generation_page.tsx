@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
 import { useForm } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -66,6 +66,7 @@ export default function diet_plan_generation_page({
         if (targetStep === 'macroelements') {
             if (!data.macroelements || data.macroelements.length === 0) {
                 setClientError('Pick at least one macroelement.');
+
                 return false;
             }
 
@@ -75,6 +76,7 @@ export default function diet_plan_generation_page({
 
             if (hasInvalid) {
                 setClientError('Each selected macroelement needs target kcal.');
+
                 return false;
             }
         }
@@ -82,6 +84,7 @@ export default function diet_plan_generation_page({
         if (targetStep === 'diet_type') {
             if (!data.diet_type) {
                 setClientError('Select a diet type.');
+
                 return false;
             }
         }
@@ -92,6 +95,7 @@ export default function diet_plan_generation_page({
                 Number(data.day_calorie_limit) <= 0
             ) {
                 setClientError('Insert a valid daily calorie limit.');
+
                 return false;
             }
         }
@@ -111,6 +115,7 @@ export default function diet_plan_generation_page({
                 ...current,
                 { id: macroId, target_kcal: 1 },
             ]);
+
             return;
         }
 
@@ -147,6 +152,7 @@ export default function diet_plan_generation_page({
 
     const onMacroelementsSubmit = () => {
         clearErrors();
+
         if (!validate('macroelements')) {
             return;
         }
@@ -161,6 +167,7 @@ export default function diet_plan_generation_page({
 
     const onDietTypeSubmit = () => {
         clearErrors();
+
         if (!validate('diet_type')) {
             return;
         }
@@ -170,6 +177,7 @@ export default function diet_plan_generation_page({
 
     const onCalorieLimitInsert = () => {
         clearErrors();
+
         if (!validate('calorie_limit')) {
             return;
         }

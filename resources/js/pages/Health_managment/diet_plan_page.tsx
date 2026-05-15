@@ -6,7 +6,6 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { index } from '@/routes/diet';
 
 type SelectedMacroelement = { id: number; target_kcal: number };
