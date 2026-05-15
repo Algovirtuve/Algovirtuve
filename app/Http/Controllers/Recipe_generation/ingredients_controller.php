@@ -13,7 +13,7 @@ use Inertia\Response;
 
 class ingredients_controller extends Controller
 {
-    public function index(Request $request): Response
+    public function showIngredients(Request $request): Response
     {
         $user = $request->user();
 
@@ -21,7 +21,7 @@ class ingredients_controller extends Controller
             'ingredients' => UserIngredient::with('ingredient')
                 ->where('user_id', $user->id)
                 ->get()
-                ->map(static fn (UserIngredient $userIngredient): array => [
+                ->map(static fn(UserIngredient $userIngredient): array => [
                     'id' => $userIngredient->ingredient->id,
                     'category' => $userIngredient->ingredient->category->value,
                     'category_label' => ucwords(str_replace('_', ' ', $userIngredient->ingredient->category->value)),
@@ -30,11 +30,11 @@ class ingredients_controller extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function showIngredientCreationPage(Request $request): Response
     {
         return Inertia::render('Recipe_generation/ingredient_creation_page', [
             'ingredient_categories' => array_map(
-                static fn (IngredientCategory $category): array => [
+                static fn(IngredientCategory $category): array => [
                     'value' => $category->value,
                     'label' => ucwords(str_replace('_', ' ', $category->value)),
                 ],
@@ -43,16 +43,16 @@ class ingredients_controller extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function createIngredient(Request $request): RedirectResponse
     {
         $ingredientData = self::validateNewIngredientData($request);
 
-        $ingredient = Ingredient::firstOrCreate([
+        $id = Ingredient::insertGetId([
             'category' => $ingredientData['category'],
         ]);
 
         $request->user()->ingredients()->syncWithoutDetaching([
-            $ingredient->id => [
+            $id => [
                 'quantity' => 1,
                 'expiry_date' => now()->addDays(7)->toDateString(),
             ],
@@ -64,15 +64,15 @@ class ingredients_controller extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Ingredient $ingredient): RedirectResponse
+    public function deleteIngredient(Request $request, Ingredient $ingredient): RedirectResponse
     {
         $user = $request->user();
 
-        abort_if(! UserIngredient::where('user_id', $user->id)->where('ingredient_id', $ingredient->id)->exists(), 404);
+        abort_if(!UserIngredient::where('user_id', $user->id)->where('ingredient_id', $ingredient->id)->exists(), 404);
 
         UserIngredient::where('user_id', $user->id)->where('ingredient_id', $ingredient->id)->delete();
 
-        if (! $ingredient->users()->exists()) {
+        if (!$ingredient->users()->exists()) {
             $ingredient->delete();
         }
 
@@ -85,7 +85,7 @@ class ingredients_controller extends Controller
     private static function validateNewIngredientData(Request $request): array
     {
         return $request->validate([
-            'category' => ['required', 'string', 'in:'.implode(',', array_column(IngredientCategory::cases(), 'value'))],
+            'category' => ['required', 'string', 'in:' . implode(',', array_column(IngredientCategory::cases(), 'value'))],
         ]);
     }
 }
