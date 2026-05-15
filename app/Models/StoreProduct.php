@@ -13,6 +13,7 @@ class StoreProduct extends Model
 
     protected $fillable = [
         'store_id',
+        'shopping_plan_id',
         'product_id',
         'price',
         'quantity',
