@@ -94,14 +94,14 @@ class recipe_controller extends Controller
         $recipeData['user_id'] = $request->user()->id;
         $recipeData['status'] = RecipeStatus::Draft->value;
 
-        $recipe = Recipe::create($recipeData);
+        $recipe = insert(Recipe::class, $recipeData);
 
         foreach ($ingredientData as $ingredient) {
             $ingredient['recipe_id'] = $recipe->id;
-            RecipeIngredient::create($ingredient);
+            insert(RecipeIngredient::class, $ingredient);
         }
 
-        RecipeRequest::create([
+        insert(RecipeRequest::class, [
             'recipe_id' => $recipe->id,
             'user_id' => $request->user()->id,
             'date' => now(),

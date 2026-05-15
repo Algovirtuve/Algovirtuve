@@ -334,7 +334,6 @@ class diet_controller extends Controller
         $dietPlan = DietPlan::query()->with('macroelements')->latest('id')->first();
 
         if (! $dietPlan) {
-            // fallback generic plan
             return Inertia::render('Health_managment/diet_plan_page', [
                 'generatedPlan' => [
                     'id' => 0,
