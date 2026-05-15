@@ -15,7 +15,6 @@ use App\Models\ShoppingCart;
 use App\Models\ShoppingPlan;
 use App\Models\Store;
 use App\Models\StoreProduct;
-use App\Models\User;
 use App\Services\products_service;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -34,7 +33,7 @@ class shopping_controller extends Controller
             'add_product' => null,
         ]);
     }
-  
+
     public function getRecipes(GetRecipesRequest $request): Response
     {
         $query = trim((string) $request->input('query', ''));
@@ -315,7 +314,7 @@ class shopping_controller extends Controller
     public function searchForProducts(InsertNewProductRequest $request, products_service $productsService): Response
     {
         $shops = $productsService->getShops($request->productTitle());
- 
+
         if ($this->validate($shops)) {
             return Inertia::render('products_plan_page', [
                 'recipes' => [],
@@ -345,7 +344,8 @@ class shopping_controller extends Controller
         ]);
     }
 
-    public function insertNewProduct(InsertNewProductRequest $request, ShoppingPlan $shoppingPlan): Response {
+    public function insertNewProduct(InsertNewProductRequest $request, ShoppingPlan $shoppingPlan): Response
+    {
         $user = $request->user();
 
         if ((int) $shoppingPlan->user_id !== (int) $user->id) {
@@ -463,7 +463,7 @@ class shopping_controller extends Controller
         ]);
     }
 
-public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shoppingPlan, int $productId): Response
+    public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shoppingPlan, int $productId): Response
     {
         $user = $request->user();
         if ((int) $shoppingPlan->user_id !== (int) $user->id) {
@@ -474,13 +474,13 @@ public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shopp
 
         foreach ($storeProducts as $storeProduct) {
             $delta = $storeProduct->price * $storeProduct->quantity;
-            
+
             $storeProduct->delete();
 
             ShoppingCart::query()
                 ->where('shopping_plan_id', $shoppingPlan->id)
                 ->where('store_id', $storeProduct->store_id)
-                ->update(['price' => DB::raw('price - ' . $delta)]);
+                ->update(['price' => DB::raw('price - '.$delta)]);
         }
 
         if ($shoppingPlan->storeProducts()->count() === 0) {
@@ -505,7 +505,7 @@ public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shopp
 
             $generatedPlan['stores'] = collect($generatedPlan['stores'] ?? [])
                 ->map(function (array $store) use ($productId) {
-                    
+
                     $productsToRemove = collect($store['products'] ?? [])
                         ->filter(fn ($p) => (int) ($p['product_id'] ?? 0) === $productId);
 
@@ -526,13 +526,13 @@ public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shopp
         }
 
         return Inertia::render('products_plan_page', [
-            'recipes'        => [],
-            'recipe_query'   => '',
+            'recipes' => [],
+            'recipe_query' => '',
             'generated_plan' => $generatedPlan,
-            'add_product'    => null,
-            'flash'          => [
+            'add_product' => null,
+            'flash' => [
                 'toast' => [
-                    'type'    => 'success',
+                    'type' => 'success',
                     'message' => 'Product removed successfully.',
                 ],
             ],
@@ -611,14 +611,13 @@ public function removeProduct(RemoveProductRequest $request, ShoppingPlan $shopp
                 continue;
             }
 
-            if (!$existingStores->contains('title', $title)) {
+            if (! $existingStores->contains('title', $title)) {
                 $storeByTitle[$title] = insert(Store::class, [
                     'title' => $title,
                     'address' => trim((string) $shop['address']),
                     'city' => trim((string) $shop['city']),
                 ]);
-            }
-            else {
+            } else {
                 $storeByTitle[$title] = $existingStores->where('title', $title)->first();
             }
         }
