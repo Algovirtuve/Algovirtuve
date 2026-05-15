@@ -83,7 +83,9 @@ export default function ProductsPlanPage({
         shops: Shop[];
     };
 }) {
-    const [selectedRecipes, setSelectedRecipes] = useState<RecipeListItem[]>([]);
+    const [selectedRecipes, setSelectedRecipes] = useState<RecipeListItem[]>(
+        [],
+    );
     const [isAddProductOpen, setIsAddProductOpen] = useState(false);
     const [productBeingRemoved, setProductBeingRemoved] = useState<null | {
         shoppingPlanId: number;
@@ -98,7 +100,7 @@ export default function ProductsPlanPage({
     );
 
     const cheapestProducts = useMemo(
-        () => (generated_plan?.cheapest_products ?? []),
+        () => generated_plan?.cheapest_products ?? [],
         [generated_plan],
     );
 
@@ -131,7 +133,7 @@ export default function ProductsPlanPage({
             searchForProducts().url,
             {
                 product_title: value,
-                generated_plan: generated_plan
+                generated_plan: generated_plan,
             },
             {
                 preserveScroll: true,
@@ -292,7 +294,9 @@ export default function ProductsPlanPage({
                                         <Button
                                             type="button"
                                             variant="secondary"
-                                            onClick={() => onChooseRecipe(recipe)}
+                                            onClick={() =>
+                                                onChooseRecipe(recipe)
+                                            }
                                         >
                                             Add
                                         </Button>
@@ -344,7 +348,8 @@ export default function ProductsPlanPage({
                             <div className="space-y-1">
                                 <CardTitle>Generated plan</CardTitle>
                                 <CardDescription>
-                                    Generated on {generated_plan.generation_date}
+                                    Generated on{' '}
+                                    {generated_plan.generation_date}
                                 </CardDescription>
                             </div>
 
@@ -366,7 +371,8 @@ export default function ProductsPlanPage({
                                                 Products (cheapest shop)
                                             </CardTitle>
                                             <CardDescription>
-                                                Full list of products and where they are cheapest.
+                                                Full list of products and where
+                                                they are cheapest.
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent className="space-y-2">
@@ -375,41 +381,62 @@ export default function ProductsPlanPage({
                                                     No products.
                                                 </div>
                                             ) : (
-                                                cheapestProducts.map((product) => (
-                                                    <div
-                                                        key={product.product_id}
-                                                        className="flex items-center justify-between gap-3 rounded-md border p-3"
-                                                    >
-                                                        <div className="space-y-1">
-                                                            <div className="text-sm font-medium">
-                                                                {product.title}
-                                                            </div>
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {product.quantity} {product.measurement} · {product.price.toFixed(2)}
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="text-right text-xs text-muted-foreground">
-                                                                {product.store_title}
-                                                                <div>{product.store_city}</div>
-                                                            </div>
-                                                            <Button
-                                                                type="button"
-                                                                variant="destructive"
-                                                                size="sm"
-                                                                onClick={() =>
-                                                                    onRemoveProduct(
-                                                                        product.product_id,
+                                                cheapestProducts.map(
+                                                    (product) => (
+                                                        <div
+                                                            key={
+                                                                product.product_id
+                                                            }
+                                                            className="flex items-center justify-between gap-3 rounded-md border p-3"
+                                                        >
+                                                            <div className="space-y-1">
+                                                                <div className="text-sm font-medium">
+                                                                    {
                                                                         product.title
-                                                                    )
-                                                                }
-                                                            >
-                                                                Remove
-                                                            </Button>
+                                                                    }
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {
+                                                                        product.quantity
+                                                                    }{' '}
+                                                                    {
+                                                                        product.measurement
+                                                                    }{' '}
+                                                                    ·{' '}
+                                                                    {product.price.toFixed(
+                                                                        2,
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="text-right text-xs text-muted-foreground">
+                                                                    {
+                                                                        product.store_title
+                                                                    }
+                                                                    <div>
+                                                                        {
+                                                                            product.store_city
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="destructive"
+                                                                    size="sm"
+                                                                    onClick={() =>
+                                                                        onRemoveProduct(
+                                                                            product.product_id,
+                                                                            product.title,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Remove
+                                                                </Button>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))
+                                                    ),
+                                                )
                                             )}
                                         </CardContent>
                                     </Card>
@@ -421,7 +448,11 @@ export default function ProductsPlanPage({
                                                     {store.title}
                                                 </CardTitle>
                                                 <CardDescription>
-                                                    {store.address} · {store.city} · Total: {store.cart_price.toFixed(2)}
+                                                    {store.address} ·{' '}
+                                                    {store.city} · Total:{' '}
+                                                    {store.cart_price.toFixed(
+                                                        2,
+                                                    )}
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent className="space-y-2">
@@ -430,21 +461,34 @@ export default function ProductsPlanPage({
                                                         No products.
                                                     </div>
                                                 ) : (
-                                                    store.products.map((product) => (
-                                                        <div
-                                                            key={`${store.id}-${product.product_id}`}
-                                                            className="flex items-center justify-between gap-3 rounded-md border p-3"
-                                                        >
-                                                            <div className="space-y-1">
-                                                                <div className="text-sm font-medium">
-                                                                    {product.title}
-                                                                </div>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {product.quantity} {product.measurement} · {product.price.toFixed(2)}
+                                                    store.products.map(
+                                                        (product) => (
+                                                            <div
+                                                                key={`${store.id}-${product.product_id}`}
+                                                                className="flex items-center justify-between gap-3 rounded-md border p-3"
+                                                            >
+                                                                <div className="space-y-1">
+                                                                    <div className="text-sm font-medium">
+                                                                        {
+                                                                            product.title
+                                                                        }
+                                                                    </div>
+                                                                    <div className="text-xs text-muted-foreground">
+                                                                        {
+                                                                            product.quantity
+                                                                        }{' '}
+                                                                        {
+                                                                            product.measurement
+                                                                        }{' '}
+                                                                        ·{' '}
+                                                                        {product.price.toFixed(
+                                                                            2,
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ))
+                                                        ),
+                                                    )
                                                 )}
                                             </CardContent>
                                         </Card>
@@ -458,19 +502,24 @@ export default function ProductsPlanPage({
                         <CardHeader>
                             <CardTitle>No plan generated yet</CardTitle>
                             <CardDescription>
-                                Generate a plan to see missing products and start editing.
+                                Generate a plan to see missing products and
+                                start editing.
                             </CardDescription>
                         </CardHeader>
                     </Card>
                 )}
             </div>
 
-            <Dialog open={isAddProductOpen} onOpenChange={onAddProductOpenChange}>
+            <Dialog
+                open={isAddProductOpen}
+                onOpenChange={onAddProductOpenChange}
+            >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Add product</DialogTitle>
                         <DialogDescription>
-                            Type a product name to see shops, then select a shop.
+                            Type a product name to see shops, then select a
+                            shop.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -495,7 +544,8 @@ export default function ProductsPlanPage({
                                                 {shop.title}
                                             </div>
                                             <div className="text-xs text-muted-foreground">
-                                                {shop.address} · {shop.city} · {shop.price.toFixed(2)}
+                                                {shop.address} · {shop.city} ·{' '}
+                                                {shop.price.toFixed(2)}
                                             </div>
                                         </div>
                                         <Button
