@@ -76,7 +76,7 @@ class ingredients_controller extends Controller
             $ingredient->delete();
         }
 
-        return redirect()->route('ingredients.index')->with('toast', [
+        return back()->with('toast', [
             'type' => 'success',
             'message' => 'Ingredient removed successfully.',
         ]);

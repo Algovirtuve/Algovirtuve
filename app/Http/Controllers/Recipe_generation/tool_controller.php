@@ -69,7 +69,7 @@ class tool_controller extends Controller
             $tool->delete();
         }
 
-        return redirect()->route('tools.index')->with('toast', [
+        return back()->with('toast', [
             'type' => 'success',
             'message' => 'Tool removed successfully.',
         ]);
