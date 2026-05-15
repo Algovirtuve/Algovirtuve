@@ -175,6 +175,7 @@ export default function ProductsPlanPage({
 
     const onAddProductOpenChange = (open: boolean) => {
         setIsAddProductOpen(open);
+
         if (!open) {
             setProductTitle('');
         }
