@@ -20,9 +20,4 @@ class GetRecipesRequest extends FormRequest
             'query' => ['nullable', 'string', 'max:255'],
         ];
     }
-
-    public function recipeQuery(): string
-    {
-        return trim((string) $this->input('query', ''));
-    }
 }

@@ -5,6 +5,7 @@ import {
     getRecipes,
     insertNewProduct,
     removeProduct,
+    searchForProducts,
 } from '@/actions/App/Http/Controllers/Shopping_managment/shopping_controller';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
@@ -127,13 +128,15 @@ export default function ProductsPlanPage({
         }
 
         router.post(
-            insertNewProduct(generated_plan.id).url,
+            searchForProducts().url,
             {
                 product_title: value,
+                generated_plan: generated_plan
             },
             {
                 preserveScroll: true,
                 preserveState: true,
+                only: ['add_product'],
             },
         );
     };
@@ -182,7 +185,7 @@ export default function ProductsPlanPage({
             return;
         }
 
-        router.post(
+        router.patch(
             insertNewProduct(generated_plan.id).url,
             {
                 product_title: productTitle,
@@ -192,6 +195,7 @@ export default function ProductsPlanPage({
                 price: shop.price,
                 quantity: 1,
                 measurement: 'unit',
+                generated_plan: generated_plan,
             },
             {
                 preserveScroll: true,
@@ -221,7 +225,7 @@ export default function ProductsPlanPage({
             return;
         }
 
-        router.delete(
+        router.patch(
             removeProduct(
                 {
                     shoppingPlan: productBeingRemoved.shoppingPlanId,
@@ -229,9 +233,14 @@ export default function ProductsPlanPage({
                 },
             ).url,
             {
+                generated_plan: generated_plan,
+            },
+            {
                 preserveScroll: true,
                 preserveState: true,
-                onSuccess: () => setProductBeingRemoved(null),
+                onSuccess: () => {
+                    setProductBeingRemoved(null);
+                },
             },
         );
     };
