@@ -18,6 +18,8 @@ import { index as preferences } from '@/routes/preferences';
 import { index as onRecipeClick } from '@/routes/recipes';
 import type { NavItem } from '@/types';
 
+const onPreferences = () => preferences();
+
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
@@ -26,7 +28,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Preferences',
-        href: preferences(),
+        href: onPreferences(),
         icon: Heart,
     },
     {
