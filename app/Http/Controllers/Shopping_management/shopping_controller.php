@@ -26,7 +26,7 @@ class shopping_controller extends Controller
 {
     public function showProductsPlanPage(): Response
     {
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'recipes' => [],
             'recipe_query' => '',
             'generated_plan' => null,
@@ -50,7 +50,7 @@ class shopping_controller extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'generated_plan' => null,
             'add_product' => null,
             'recipes' => $recipes,
@@ -70,7 +70,7 @@ class shopping_controller extends Controller
         $missingIngredients = $this->checkMissingIngredients($userIngredients, $recipesWithIngredients);
 
         if ($missingIngredients === []) {
-            return Inertia::render('products_plan_page', [
+            return Inertia::render('Shopping_management/products_plan_page', [
                 'recipes' => [],
                 'recipe_query' => '',
                 'generated_plan' => null,
@@ -149,20 +149,6 @@ class shopping_controller extends Controller
         }
 
         $storeProducts = $shoppingPlan->storeProducts()->get();
-
-        // if ($storeProducts->isEmpty()) {
-        //     return Inertia::render('products_plan_page', [
-        //         'recipes' => [],
-        //         'recipe_query' => '',
-        //         'generated_plan' => [
-        //             'id' => (int) $shoppingPlan->id,
-        //             'generation_date' => (string) $shoppingPlan->generation_date->toDateString(),
-        //             'cheapest_products' => [],
-        //             'stores' => [],
-        //         ],
-        //         'add_product' => null,
-        //     ]);
-        // }
 
         $pricesByProductId = [];
         $cheapestByProductId = [];
@@ -298,7 +284,7 @@ class shopping_controller extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'recipes' => [],
             'recipe_query' => '',
             'generated_plan' => [
@@ -316,7 +302,7 @@ class shopping_controller extends Controller
         $shops = $productsService->getShops($request->productTitle());
 
         if ($this->validate($shops)) {
-            return Inertia::render('products_plan_page', [
+            return Inertia::render('Shopping_management/products_plan_page', [
                 'recipes' => [],
                 'recipe_query' => '',
                 'generated_plan' => $request['generated_plan'] ?? null,
@@ -327,7 +313,7 @@ class shopping_controller extends Controller
             ]);
         }
 
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'recipes' => [],
             'recipe_query' => '',
             'generated_plan' => $request['generated_plan'] ?? null,
@@ -449,7 +435,7 @@ class shopping_controller extends Controller
             ];
         }
 
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'recipes' => [],
             'recipe_query' => '',
             'generated_plan' => $generatedPlan,
@@ -525,7 +511,7 @@ class shopping_controller extends Controller
                 ->all();
         }
 
-        return Inertia::render('products_plan_page', [
+        return Inertia::render('Shopping_management/products_plan_page', [
             'recipes' => [],
             'recipe_query' => '',
             'generated_plan' => $generatedPlan,
