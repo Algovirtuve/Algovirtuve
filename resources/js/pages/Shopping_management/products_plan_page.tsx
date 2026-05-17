@@ -1,5 +1,12 @@
 import { Head, router } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import {
+    generateProductsPlan,
+    getRecipes,
+    insertNewProduct,
+    removeProduct,
+    searchForProducts,
+} from '@/actions/App/Http/Controllers/Shopping_management/shopping_controller';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,13 +26,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { dashboard } from '@/routes';
-import {
-    generateProductsPlan,
-    getRecipes,
-    insertNewProduct,
-    removeProduct,
-    searchForProducts,
-} from '@/actions/App/Http/Controllers/Shopping_management/shopping_controller';
 
 type RecipeListItem = {
     id: number;
