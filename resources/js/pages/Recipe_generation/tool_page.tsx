@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,17 +12,10 @@ import {
 } from '@/components/ui/card';
 import {
     Dialog,
-    DialogClose,
-    DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    create as showToolCreationPage,
-    destroy as deleteTool,
-} from '@/routes/tools';
 
 type ToolItem = {
     id: number;
@@ -38,7 +31,20 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
     };
 
     const startToolCreation = () => {
-        showToolCreationPage.form();
+        router.visit('/tools/create');
+    };
+
+    const confirmToolDeletion = () => {
+        if (toolToRemove == null) {
+            return;
+        }
+
+        router.delete(`/tools/${toolToRemove.id}`);
+        setToolToRemove(null);
+    };
+
+    const cancelToolDeletion = () => {
+        setToolToRemove(null);
     };
 
     return (
@@ -96,6 +102,32 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
                     </div>
                 )}
             </div>
+
+            {toolToRemove ? (
+                <Dialog>
+                    <DialogHeader>
+                        <DialogTitle>Confirm removal</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to remove{' '}
+                            <strong>{toolToRemove.type_label}</strong> from your
+                            tools?
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <Button
+                        variant="outline"
+                        onClick={() => cancelToolDeletion()}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        onClick={() => confirmToolDeletion()}
+                    >
+                        Delete tool
+                    </Button>
+                </Dialog>
+            ) : null}
         </>
     );
 }

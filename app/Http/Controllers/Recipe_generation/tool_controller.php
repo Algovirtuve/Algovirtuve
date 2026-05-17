@@ -47,9 +47,14 @@ class tool_controller extends Controller
     {
         $toolData = self::validateNewToolData($request);
 
-        Tool::insert([
+        $user = $request->user();
+
+        $user_id = $user->id;
+        $tool_id = Tool::insertGetId([
             'type' => $toolData['type'],
         ]);
+
+        UserTool::insert(["user_id" => $user_id, "tool_id" => $tool_id]);
 
         return redirect()->route('tools.index')->with('toast', [
             'type' => 'success',
