@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(RecipeSeeder::class);
+        $this->call(MacroelementSeeder::class);
         $this->call(RequestSeeder::class);
     }
 }

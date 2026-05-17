@@ -3,7 +3,9 @@ import Heading from '@/components/heading';
 import { RecipeCard } from '@/components/recipes/recipe-card';
 import { RecipeDeleteDialog } from '@/components/recipes/recipe-delete-dialog';
 import { RecipeEditDialog } from '@/components/recipes/recipe-edit-dialog';
+import { RecipeRequestDialog } from '@/components/recipes/recipe-request-dialog';
 import type { EnumOption, RecipeListItem } from '@/components/recipes/types';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardDescription,
@@ -28,6 +30,15 @@ export default function RecipesIndex({
     const [recipeBeingDeleted, onDelete] = useState<RecipeListItem | null>(
         null,
     );
+    const [isCreateRequestOpen, setIsCreateRequestOpen] = useState(false);
+
+    const onRecipeRequest = () => {
+        setIsCreateRequestOpen(true);
+    };
+
+    const onCreateRequestCancel = () => {
+        setIsCreateRequestOpen(false);
+    };
 
     return (
         <>
@@ -37,6 +48,9 @@ export default function RecipesIndex({
                         title="Recipe page"
                         description="Review your created recipes, update them in an edit modal, or remove them with confirmation."
                     />
+                    <Button type="button" onClick={onRecipeRequest}>
+                        Create recipe request
+                    </Button>
                 </div>
 
                 {recipes.length === 0 ? (
@@ -74,6 +88,14 @@ export default function RecipesIndex({
             <RecipeDeleteDialog
                 recipe={recipeBeingDeleted}
                 onCancelDelete={() => onDelete(null)}
+            />
+
+            <RecipeRequestDialog
+                isOpen={isCreateRequestOpen}
+                difficulties={difficulties}
+                dietTypes={dietTypes}
+                meals={meals}
+                onCreateRequestCancel={onCreateRequestCancel}
             />
         </>
     );

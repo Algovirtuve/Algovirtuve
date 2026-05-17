@@ -73,6 +73,71 @@ test('authenticated users can update their own recipe', function () {
     ]);
 });
 
+test('authenticated users can create a recipe request', function () {
+    /** @var User $user */
+    $user = User::factory()->createOne();
+
+    $response = $this->actingAs($user)->post(route('recipes.request'), [
+        'title' => 'Requested recipe',
+        'instructions' => 'Mix, bake, and serve.',
+        'preparation_time' => '40 minutes',
+        'servings' => 4,
+        'difficulty' => RecipeDifficulty::Medium->value,
+        'calorie_intake' => 550,
+        'diet_type' => DietType::Vegetarian->value,
+        'meal' => Meal::Dinner->value,
+    ]);
+
+    $response->assertRedirect(route('recipes.index', absolute: false));
+    $response->assertSessionHas('toast', [
+        'type' => 'success',
+        'message' => 'Recipe request created successfully.',
+    ]);
+
+    $recipe = Recipe::query()->where('title', 'Requested recipe')->firstOrFail();
+
+    $this->assertDatabaseHas('recipes', [
+        'id' => $recipe->id,
+        'user_id' => $user->id,
+        'status' => RecipeStatus::Draft->value,
+    ]);
+
+    $this->assertDatabaseHas('requests', [
+        'recipe_id' => $recipe->id,
+        'user_id' => $user->id,
+    ]);
+});
+
+test('recipe request submission validates the recipe fields', function () {
+    /** @var User $user */
+    $user = User::factory()->createOne();
+
+    $response = $this->actingAs($user)
+        ->from(route('recipes.index'))
+        ->post(route('recipes.request'), [
+            'title' => '',
+            'instructions' => '',
+            'preparation_time' => '',
+            'servings' => '',
+            'difficulty' => '',
+            'calorie_intake' => '',
+            'diet_type' => '',
+            'meal' => '',
+        ]);
+
+    $response->assertRedirect(route('recipes.index', absolute: false));
+    $response->assertSessionHasErrors([
+        'title',
+        'instructions',
+        'preparation_time',
+        'servings',
+        'difficulty',
+        'calorie_intake',
+        'diet_type',
+        'meal',
+    ]);
+});
+
 test('authenticated users cannot change recipe status through the user update route', function () {
     /** @var User $user */
     $user = User::factory()->createOne();
