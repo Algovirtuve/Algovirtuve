@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import type {FormEvent} from 'react';
+import type { FormEvent } from 'react';
 import InputError from '@/components/input-error';
 import type { EnumOption } from '@/components/recipes/types';
 import { Button } from '@/components/ui/button';
