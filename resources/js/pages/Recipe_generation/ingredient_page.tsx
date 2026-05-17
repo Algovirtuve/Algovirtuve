@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
@@ -12,17 +12,11 @@ import {
 } from '@/components/ui/card';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    create as showIngredientCreationPage,
-    destroy as deleteIngredient,
-} from '@/routes/ingredients';
 
 type IngredientItem = {
     id: number;
@@ -43,7 +37,20 @@ export default function IngredientPage({
     };
 
     const startIngredientCreation = () => {
-        showIngredientCreationPage.form();
+        router.visit('/ingredients/create');
+    };
+
+    const confirmIngredientDeletion = () => {
+        if (ingredientToRemove == null) {
+            return;
+        }
+
+        router.delete(`/ingredients/${ingredientToRemove.id}`);
+        setIngredientToRemove(null);
+    };
+
+    const cancelIngredientDeletion = () => {
+        setIngredientToRemove(null);
     };
 
     return (
@@ -105,6 +112,41 @@ export default function IngredientPage({
                     </div>
                 )}
             </div>
+
+            {ingredientToRemove ? (
+                <Dialog
+                    open={ingredientToRemove != null}
+                    onOpenChange={(open) => !open && cancelIngredientDeletion()}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirm removal</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to remove{' '}
+                                <strong>
+                                    {ingredientToRemove?.category_label}
+                                </strong>{' '}
+                                from your ingredients?
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="mt-4 flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={cancelIngredientDeletion}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={confirmIngredientDeletion}
+                            >
+                                Delete ingredient
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            ) : null}
         </>
     );
 }
