@@ -13,8 +13,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    index as onIngredientPage,
-    store as onIngredientStore,
+    index as showIngredients,
+    store as createIngredient,
 } from '@/routes/ingredients';
 
 type IngredientCategoryOption = {
@@ -42,16 +42,13 @@ export default function IngredientCreationPage({
                         Create a new ingredient
                     </h1>
                 </div>
-                <TextLink href={onIngredientPage()}>
+                <TextLink href={showIngredients()}>
                     <ArrowLeft />
                     Back to ingredients
                 </TextLink>
             </div>
 
-            <Form
-                {...onIngredientStore.form()}
-                className="grid max-w-2xl gap-6"
-            >
+            <Form {...createIngredient.form()} className="grid max-w-2xl gap-6">
                 {({ processing }) => (
                     <>
                         <div className="grid gap-2">
@@ -86,7 +83,7 @@ export default function IngredientCreationPage({
                                 Create ingredient
                             </Button>
                             <Link
-                                href={onIngredientPage()}
+                                href={showIngredients()}
                                 className="text-sm text-muted-foreground hover:text-primary"
                             >
                                 Cancel

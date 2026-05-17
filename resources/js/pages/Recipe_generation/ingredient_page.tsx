@@ -20,8 +20,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import {
-    create as startIngredientCreation,
-    destroy as onIngredientDestroy,
+    create as showIngredientCreationPage,
+    destroy as deleteIngredient,
 } from '@/routes/ingredients';
 
 type IngredientItem = {
@@ -42,13 +42,9 @@ export default function IngredientPage({
         setIngredientToRemove(ingredient);
     };
 
-    const confirmIngredientDeletion = () => {
-        return ingredientToRemove
-            ? onIngredientDestroy.form(ingredientToRemove.id)
-            : null;
+    const startIngredientCreation = () => {
+        showIngredientCreationPage.form();
     };
-
-    const destroyForm = confirmIngredientDeletion();
 
     return (
         <>
@@ -64,13 +60,10 @@ export default function IngredientPage({
                             My ingredients
                         </CardTitle>
                     </div>
-
-                    <Link href={startIngredientCreation()} prefetch>
-                        <Button>
-                            <Plus />
-                            Add ingredient
-                        </Button>
-                    </Link>
+                    <Button onClick={() => startIngredientCreation()}>
+                        <Plus />
+                        Add ingredient
+                    </Button>
                 </div>
 
                 {ingredients.length === 0 ? (
@@ -112,45 +105,6 @@ export default function IngredientPage({
                     </div>
                 )}
             </div>
-
-            {ingredientToRemove && destroyForm ? (
-                <Dialog
-                    open
-                    onOpenChange={(open) =>
-                        !open && setIngredientToRemove(null)
-                    }
-                >
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Confirm removal</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to remove{' '}
-                                <strong>
-                                    {ingredientToRemove.category_label}
-                                </strong>{' '}
-                                from your ingredients?
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        <Form
-                            action={destroyForm.action}
-                            method={destroyForm.method}
-                            className="grid gap-4"
-                        >
-                            <DialogFooter className="justify-end">
-                                <DialogClose asChild>
-                                    <Button variant="outline" type="button">
-                                        Cancel
-                                    </Button>
-                                </DialogClose>
-                                <Button variant="destructive" type="submit">
-                                    Delete ingredient
-                                </Button>
-                            </DialogFooter>
-                        </Form>
-                    </DialogContent>
-                </Dialog>
-            ) : null}
         </>
     );
 }

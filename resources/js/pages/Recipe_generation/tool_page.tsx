@@ -20,8 +20,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import {
-    create as startToolCreation,
-    destroy as onToolDestroy,
+    create as showToolCreationPage,
+    destroy as deleteTool,
 } from '@/routes/tools';
 
 type ToolItem = {
@@ -37,11 +37,9 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
         setToolToRemove(tool);
     };
 
-    const confirmToolDeletion = () => {
-        return toolToRemove ? onToolDestroy.form(toolToRemove.id) : null;
+    const startToolCreation = () => {
+        showToolCreationPage.form();
     };
-
-    const destroyForm = confirmToolDeletion();
 
     return (
         <>
@@ -57,13 +55,10 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
                             My tools
                         </CardTitle>
                     </div>
-
-                    <Link href={startToolCreation()} prefetch>
-                        <Button>
-                            <Plus />
-                            Add tool
-                        </Button>
-                    </Link>
+                    <Button onClick={() => startToolCreation()}>
+                        <Plus />
+                        Add tool
+                    </Button>
                 </div>
 
                 {tools.length === 0 ? (
@@ -101,41 +96,6 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
                     </div>
                 )}
             </div>
-
-            {toolToRemove && destroyForm ? (
-                <Dialog
-                    open
-                    onOpenChange={(open) => !open && setToolToRemove(null)}
-                >
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Confirm removal</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to remove{' '}
-                                <strong>{toolToRemove.type_label}</strong> from
-                                your tools?
-                            </DialogDescription>
-                        </DialogHeader>
-
-                        <Form
-                            action={destroyForm.action}
-                            method={destroyForm.method}
-                            className="grid gap-4"
-                        >
-                            <DialogFooter className="justify-end">
-                                <DialogClose asChild>
-                                    <Button variant="outline" type="button">
-                                        Cancel
-                                    </Button>
-                                </DialogClose>
-                                <Button variant="destructive" type="submit">
-                                    Delete tool
-                                </Button>
-                            </DialogFooter>
-                        </Form>
-                    </DialogContent>
-                </Dialog>
-            ) : null}
         </>
     );
 }

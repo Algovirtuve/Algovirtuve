@@ -12,7 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { index as onToolPage, store as onToolStore } from '@/routes/tools';
+import { index as showTools, store as createTool } from '@/routes/tools';
 
 type ToolTypeOption = {
     value: string;
@@ -39,13 +39,13 @@ export default function ToolCreationPage({
                         Create a new tool
                     </h1>
                 </div>
-                <TextLink href={onToolPage()}>
+                <TextLink href={showTools()}>
                     <ArrowLeft />
                     Back to tools
                 </TextLink>
             </div>
 
-            <Form {...onToolStore.form()} className="grid max-w-2xl gap-6">
+            <Form {...createTool.form()} className="grid max-w-2xl gap-6">
                 {({ processing }) => (
                     <>
                         <div className="grid gap-2">
@@ -78,7 +78,7 @@ export default function ToolCreationPage({
                                 Create tool
                             </Button>
                             <Link
-                                href={onToolPage()}
+                                href={showTools()}
                                 className="text-sm text-muted-foreground hover:text-primary"
                             >
                                 Cancel
