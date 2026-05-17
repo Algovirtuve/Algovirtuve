@@ -1,7 +1,7 @@
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
-import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { NavigationBar } from '@/components/navigation-bar';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -10,7 +10,7 @@ export default function AppSidebarLayout({
 }: AppLayoutProps) {
     return (
         <AppShell>
-            <AppSidebar />
+            <NavigationBar />
             <AppContent className="overflow-x-hidden">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {children}

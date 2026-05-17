@@ -6,9 +6,12 @@ Route::middleware(['auth'])->group(function () {
     Route::inertia('/', 'main_page')->name('dashboard');
 });
 
-require __DIR__.'/auth.php';
-require __DIR__.'/preferences.php';
-require __DIR__.'/recipes.php';
-require __DIR__.'/recipe_generation.php';
-require __DIR__.'/settings.php';
-require __DIR__.'/admin.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/preferences.php';
+require __DIR__ . '/recipes.php';
+require __DIR__ . '/recipe_generation.php';
+require __DIR__ . '/shopping.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/admin.php';
+
+require __DIR__ . '/shops_api.php';
