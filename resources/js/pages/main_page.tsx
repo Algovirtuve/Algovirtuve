@@ -1,9 +1,9 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { viewAdminPage } from '@/actions/App/Http/Controllers/Administration/admin_controller';
-import { showProductsPlanPage } from '@/actions/App/Http/Controllers/Shopping_management/shopping_controller';
 import { Button } from '@/components/ui/button';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { dashboard } from '@/routes';
+import { showProductsPlanPage } from '@/actions/App/Http/Controllers/Shopping_management/shopping_controller';
 
 export default function MainPage() {
     const { auth } = usePage().props;

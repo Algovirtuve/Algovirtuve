@@ -34,7 +34,7 @@ type TempState = {
 
 type Step = 'macroelements' | 'diet_type' | 'calorie_limit' | 'review';
 
-export default function diet_plan_generation_page({
+export default function DietPlanGenerationPage({
     macroelements,
     dietTypes,
     tempState = {},
@@ -474,7 +474,7 @@ export default function diet_plan_generation_page({
     );
 }
 
-diet_plan_generation_page.layout = {
+DietPlanGenerationPage.layout = {
     breadcrumbs: [
         {
             title: 'Diet plan',
