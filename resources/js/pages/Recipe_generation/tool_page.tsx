@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import {
     Dialog,
+    DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
@@ -104,28 +105,35 @@ export default function ToolPage({ tools }: { tools: ToolItem[] }) {
             </div>
 
             {toolToRemove ? (
-                <Dialog>
-                    <DialogHeader>
-                        <DialogTitle>Confirm removal</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to remove{' '}
-                            <strong>{toolToRemove.type_label}</strong> from your
-                            tools?
-                        </DialogDescription>
-                    </DialogHeader>
+                <Dialog
+                    open={toolToRemove != null}
+                    onOpenChange={(open) => !open && cancelToolDeletion()}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirm removal</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to remove{' '}
+                                <strong>{toolToRemove?.type_label}</strong> from
+                                your tools?
+                            </DialogDescription>
+                        </DialogHeader>
 
-                    <Button
-                        variant="outline"
-                        onClick={() => cancelToolDeletion()}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="destructive"
-                        onClick={() => confirmToolDeletion()}
-                    >
-                        Delete tool
-                    </Button>
+                        <div className="mt-4 flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={cancelToolDeletion}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={confirmToolDeletion}
+                            >
+                                Delete tool
+                            </Button>
+                        </div>
+                    </DialogContent>
                 </Dialog>
             ) : null}
         </>
