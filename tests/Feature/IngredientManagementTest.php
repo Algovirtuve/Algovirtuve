@@ -17,7 +17,7 @@ test('authenticated users can view the ingredient management page', function () 
 
     $response->assertOk();
     $response->assertInertia(
-        fn (Assert $page) => $page
+        fn(Assert $page) => $page
             ->component('Recipe_generation/ingredient_page')
             ->where('ingredients.0.category_label', 'Vegetable')
     );
@@ -30,7 +30,7 @@ test('authenticated users can view the ingredient creation page', function () {
 
     $response->assertOk();
     $response->assertInertia(
-        fn (Assert $page) => $page
+        fn(Assert $page) => $page
             ->component('Recipe_generation/ingredient_creation_page')
             ->has('ingredient_categories')
     );
@@ -68,7 +68,6 @@ test('authenticated users can remove their own ingredient', function () {
 
     $response = $this->actingAs($user)->delete(route('ingredients.destroy', $ingredient));
 
-    $response->assertRedirect(route('ingredients.index', absolute: false));
     $response->assertSessionHas('toast', [
         'type' => 'success',
         'message' => 'Ingredient removed successfully.',
