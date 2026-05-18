@@ -47,16 +47,15 @@ class ingredients_controller extends Controller
     {
         $ingredientData = self::validateNewIngredientData($request);
 
-        $id = Ingredient::insertGetId([
-            'category' => $ingredientData['category'],
-        ]);
+        $ingredient = Ingredient::where('category', $ingredientData['category'])->first();
 
-        $request->user()->ingredients()->syncWithoutDetaching([
-            $id => [
-                'quantity' => 1,
-                'expiry_date' => now()->addDays(7)->toDateString(),
-            ],
-        ]);
+        if ($ingredient === null) {
+            $ingredient = insert(Ingredient::class, $ingredientData);
+        }
+
+        if (UserIngredient::where('user_id', $request->user()->id)->where('ingredient_id', $ingredient->id)->doesntExist()) {
+            insert(UserIngredient::class, ['user_id' => $request->user()->id, 'ingredient_id' => $ingredient->id, 'quantity' => 1, 'expiry_date' => now()->addWeek()]);
+        }
 
         return redirect()->route('ingredients.index')->with('toast', [
             'type' => 'success',

@@ -49,12 +49,15 @@ class tool_controller extends Controller
 
         $user = $request->user();
 
-        $user_id = $user->id;
-        $tool_id = Tool::insertGetId([
-            'type' => $toolData['type'],
-        ]);
+        $tool = Tool::where('type', $toolData['type'])->first();
 
-        UserTool::insert(['user_id' => $user_id, 'tool_id' => $tool_id]);
+        if ($tool === null) {
+            $tool = insert(Tool::class, $toolData);
+        }
+
+        if (UserTool::where('user_id', $user->id)->where('tool_id', $tool->id)->doesntExist()) {
+            insert(UserTool::class, ['user_id' => $user->id, 'tool_id' => $tool->id]);
+        }
 
         return redirect()->route('tools.index')->with('toast', [
             'type' => 'success',
